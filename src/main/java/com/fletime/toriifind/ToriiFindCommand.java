@@ -688,13 +688,22 @@ public class ToriiFindCommand {
     }
 
     /**
-     * 展示零洲鸟居搜索结果
+     * 展示零洲鸟居的搜索结果
+     * @param context 命令上下文
+     * @param results 结果列表
      */
     private static void displayZerothResults(CommandContext<FabricClientCommandSource> context, List<Torii> results) {
-        context.getSource().sendFeedback(ToriiFind.translate("toriifind.divider"));
         if (results.isEmpty()) {
-            context.getSource().sendFeedback(ToriiFind.translate("toriifind.result.not_found"));
+            context.getSource().sendFeedback(ToriiFind.translate("toriifind.divider"));
+            context.getSource().sendFeedback(ToriiFind.translate("toriifind.result.empty.torii"));
+            context.getSource().sendFeedback(ToriiFind.translate("toriifind.divider"));
         } else {
+            context.getSource().sendFeedback(ToriiFind.translate("toriifind.divider"));
+            context.getSource().sendFeedback(ToriiFind.translate("toriifind.result.title", results.size()));
+            context.getSource().sendFeedback(ToriiFind.translate("toriifind.divider"));
+            context.getSource().sendFeedback(ToriiFind.translate("toriifind.result.header.torii"));
+            context.getSource().sendFeedback(ToriiFind.translate("toriifind.divider"));
+
             for (Torii torii : results) {
                 String formattedText = String.format(
                     ToriiFind.translate("toriifind.result.format.entry").getString(),
@@ -702,12 +711,14 @@ public class ToriiFindCommand {
                 );
                 MutableText baseText = Text.literal(formattedText + " ");
                 String wikiUrl = "https://wiki.ria.red/wiki/" + torii.name;
+
                 Style linkStyle = Style.EMPTY
                     .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, wikiUrl))
                     .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
-                                                  ToriiFind.translate("toriifind.result.wiki_hover", wikiUrl)))
+                        ToriiFind.translate("toriifind.result.wiki_hover", wikiUrl)))
                     .withFormatting(Formatting.UNDERLINE);
-                MutableText linkText = ((MutableText)ToriiFind.translate("toriifind.result.wiki_link")).setStyle(linkStyle);
+
+                MutableText linkText = ((MutableText) ToriiFind.translate("toriifind.result.wiki_link")).setStyle(linkStyle);
                 context.getSource().sendFeedback(baseText.append(linkText));
             }
             context.getSource().sendFeedback(ToriiFind.translate("toriifind.divider"));
@@ -715,13 +726,22 @@ public class ToriiFindCommand {
     }
 
     /**
-     * 展示后土境地搜索结果
+     * 展示后土数据的搜索结果
+     * @param context 命令上下文
+     * @param results 结果列表
      */
     private static void displayHoutuResults(CommandContext<FabricClientCommandSource> context, List<Houtu> results) {
-        context.getSource().sendFeedback(ToriiFind.translate("toriifind.divider"));
         if (results.isEmpty()) {
-            context.getSource().sendFeedback(ToriiFind.translate("toriifind.result.not_found"));
+            context.getSource().sendFeedback(ToriiFind.translate("toriifind.divider"));
+            context.getSource().sendFeedback(ToriiFind.translate("toriifind.result.empty.houtu"));
+            context.getSource().sendFeedback(ToriiFind.translate("toriifind.divider"));
         } else {
+            context.getSource().sendFeedback(ToriiFind.translate("toriifind.divider"));
+            context.getSource().sendFeedback(ToriiFind.translate("toriifind.result.title", results.size()));
+            context.getSource().sendFeedback(ToriiFind.translate("toriifind.divider"));
+            context.getSource().sendFeedback(ToriiFind.translate("toriifind.result.header.houtu"));
+            context.getSource().sendFeedback(ToriiFind.translate("toriifind.divider"));
+
             for (Houtu houtu : results) {
                 String formattedText = String.format(
                     ToriiFind.translate("toriifind.result.format.entry").getString(),
@@ -729,12 +749,14 @@ public class ToriiFindCommand {
                 );
                 MutableText baseText = Text.literal(formattedText + " ");
                 String wikiUrl = "https://wiki.ria.red/wiki/" + houtu.name;
+
                 Style linkStyle = Style.EMPTY
                     .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, wikiUrl))
                     .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
-                                                  ToriiFind.translate("toriifind.result.wiki_hover", wikiUrl)))
+                        ToriiFind.translate("toriifind.result.wiki_hover", wikiUrl)))
                     .withFormatting(Formatting.UNDERLINE);
-                MutableText linkText = ((MutableText)ToriiFind.translate("toriifind.result.wiki_link")).setStyle(linkStyle);
+
+                MutableText linkText = ((MutableText) ToriiFind.translate("toriifind.result.wiki_link")).setStyle(linkStyle);
                 context.getSource().sendFeedback(baseText.append(linkText));
             }
             context.getSource().sendFeedback(ToriiFind.translate("toriifind.divider"));
@@ -826,7 +848,9 @@ public class ToriiFindCommand {
     }
 
     /**
-     * 彩蛋命令，往公屏发一条消息 Ciallo～(∠・ω< )⌒☆
+     * 向公屏发送 𝑪𝒊𝒂𝒍𝒍𝒐～(∠・ω< )⌒★
+     * @param context 命令上下文
+     * @return 执行结果
      */
     private static int sendCialloMessage(CommandContext<FabricClientCommandSource> context) {
         MinecraftClient client = MinecraftClient.getInstance();
