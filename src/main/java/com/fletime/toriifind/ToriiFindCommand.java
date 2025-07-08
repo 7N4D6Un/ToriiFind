@@ -212,11 +212,11 @@ public class ToriiFindCommand {
         context.getSource().sendFeedback(ToriiFind.translate("toriifind.help.command.zeroth_name"));
         context.getSource().sendFeedback(ToriiFind.translate("toriifind.help.command.houtu_num"));
         context.getSource().sendFeedback(ToriiFind.translate("toriifind.help.command.houtu_name"));
-        context.getSource().sendFeedback(Text.literal("§6/toriifind source list §f- 列出所有可用的数据源"));
-        context.getSource().sendFeedback(Text.literal("§6/toriifind source switch <name> §f- 切换到指定数据源"));
-        context.getSource().sendFeedback(Text.literal("§6/toriifind source current §f- 显示当前使用的数据源"));
-        context.getSource().sendFeedback(Text.literal("§6/toriifind source check §f- 检查所有数据源更新和状态"));
-        context.getSource().sendFeedback(Text.literal("§6/toriifind source reload §f- 重新加载配置文件"));
+        context.getSource().sendFeedback(ToriiFind.translate("toriifind.help.command.source.list"));
+        context.getSource().sendFeedback(ToriiFind.translate("toriifind.help.command.source.switch"));
+        context.getSource().sendFeedback(ToriiFind.translate("toriifind.help.command.source.current"));
+        context.getSource().sendFeedback(ToriiFind.translate("toriifind.help.command.source.check"));
+        context.getSource().sendFeedback(ToriiFind.translate("toriifind.help.command.source.reload"));
         context.getSource().sendFeedback(ToriiFind.translate("toriifind.help.command.ciallo"));
         context.getSource().sendFeedback(ToriiFind.translate("toriifind.divider"));
         return 1;
@@ -227,7 +227,7 @@ public class ToriiFindCommand {
      */
     private static int listSources(CommandContext<FabricClientCommandSource> context) {
         context.getSource().sendFeedback(ToriiFind.translate("toriifind.divider"));
-        context.getSource().sendFeedback(Text.literal("§6可用的数据源："));
+        context.getSource().sendFeedback(ToriiFind.translate("toriifind.source.list.title"));
         
         Map<String, SourceConfig.DataSource> sources = ToriiFind.getAllSources();
         String currentSource = ToriiFind.getCurrentSourceName();
@@ -236,24 +236,32 @@ public class ToriiFindCommand {
             String name = entry.getKey();
             SourceConfig.DataSource source = entry.getValue();
             
-            String prefix = name.equals(currentSource) ? "§a[当前] " : "§7";
-            String status = source.isEnabled() ? "§a[启用]" : "§c[禁用]";
-            String mode = source.isApiMode() ? "§b[API模式]" : "§e[JSON模式]";
-            
+            String prefix = name.equals(currentSource)
+                ? ToriiFind.translate("toriifind.source.status.current").getString()
+                : ToriiFind.translate("toriifind.source.status.other").getString();
+            String status = source.isEnabled()
+                ? ToriiFind.translate("toriifind.source.status.enabled").getString()
+                : ToriiFind.translate("toriifind.source.status.disabled").getString();
+            String mode = source.isApiMode()
+                ? ToriiFind.translate("toriifind.source.status.api_mode").getString()
+                : ToriiFind.translate("toriifind.source.status.json_mode").getString();
+
             StringBuilder info = new StringBuilder();
             info.append(prefix).append(name).append(" ").append(status).append(" ").append(mode);
-            info.append(" §f- ").append(source.getName());
-            
+            info.append(ToriiFind.translate("toriifind.source.info.separator").getString()).append(source.getName());
+
             // 显示版本信息（如果有）
             if (source.getVersion() != null) {
-                info.append(" §7(").append(source.getVersion()).append(")");
+                info.append(ToriiFind.translate("toriifind.source.info.version", source.getVersion()).getString());
             }
             
             context.getSource().sendFeedback(Text.literal(info.toString()));
             
             // 显示镜像信息
             if (!source.isApiMode() && source.getMirrorUrls() != null && source.getMirrorUrls().length > 0) {
-                context.getSource().sendFeedback(Text.literal("  §7镜像地址: " + source.getMirrorUrls().length + " 个可用"));
+                context.getSource().sendFeedback(
+                    ToriiFind.translate("toriifind.source.mirror.count", source.getMirrorUrls().length)
+                );
             }
         }
         
@@ -266,9 +274,9 @@ public class ToriiFindCommand {
      */
     private static int switchSource(CommandContext<FabricClientCommandSource> context, String sourceName) {
         if (ToriiFind.switchSource(sourceName)) {
-            context.getSource().sendFeedback(Text.literal("§a成功切换到数据源：" + sourceName));
+            context.getSource().sendFeedback(Text.translatable("toriifind.source.switch.success", sourceName));
         } else {
-            context.getSource().sendError(Text.literal("§c切换失败：数据源 '" + sourceName + "' 不存在或未启用"));
+            context.getSource().sendError(Text.translatable("toriifind.source.switch.fail", sourceName));
         }
         return 1;
     }
@@ -281,16 +289,24 @@ public class ToriiFindCommand {
         SourceConfig.DataSource source = ToriiFind.getAllSources().get(currentSource);
         
         if (source != null) {
-            String mode = source.isApiMode() ? "API模式" : "JSON模式";
-            context.getSource().sendFeedback(Text.literal("§6当前数据源：§a" + currentSource + " §f- " + source.getName() + " §7(" + mode + ")"));
-            
+            String mode = source.isApiMode()
+                ? ToriiFind.translate("toriifind.source.status.api_mode").getString()
+                : ToriiFind.translate("toriifind.source.status.json_mode").getString();
+            context.getSource().sendFeedback(Text.translatable(
+                "toriifind.source.current.simple", currentSource, mode
+            ));
+
             if (source.isApiMode() && source.getApiBaseUrl() != null) {
-                context.getSource().sendFeedback(Text.literal("§7API地址：" + source.getApiBaseUrl()));
+                context.getSource().sendFeedback(Text.translatable(
+                    "toriifind.source.current.api", source.getApiBaseUrl()
+                ));
             } else if (!source.isApiMode() && source.getUrl() != null) {
-                context.getSource().sendFeedback(Text.literal("§7JSON地址：" + source.getUrl()));
+                context.getSource().sendFeedback(Text.translatable(
+                    "toriifind.source.current.json", source.getUrl()
+                ));
             }
         } else {
-            context.getSource().sendError(Text.literal("§c当前数据源配置异常"));
+            context.getSource().sendError(Text.translatable("toriifind.source.current.error"));
         }
         return 1;
     }
@@ -299,25 +315,25 @@ public class ToriiFindCommand {
      * 检查所有数据源更新和状态
      */
     private static int checkAllSources(CommandContext<FabricClientCommandSource> context) {
-        context.getSource().sendFeedback(Text.literal("§6正在检查所有数据源..."));
-        
+        context.getSource().sendFeedback(ToriiFind.translate("toriifind.source.check.start"));
+
         Map<String, SourceConfig.DataSource> sources = ToriiFind.getAllSources();
-        
+
         for (Map.Entry<String, SourceConfig.DataSource> entry : sources.entrySet()) {
             String sourceName = entry.getKey();
             SourceConfig.DataSource dataSource = entry.getValue();
-            
+
             if (dataSource.isApiMode()) {
                 // API模式：检查连接状态
                 java.util.concurrent.CompletableFuture.supplyAsync(() -> {
                     return SourceStatusService.checkSourceStatus(dataSource);
                 }).thenAcceptAsync(status -> {
                     net.minecraft.client.MinecraftClient.getInstance().execute(() -> {
-                        StringBuilder info = new StringBuilder();
-                        info.append("§6").append(sourceName).append(" §f(API模式) ");
-                        info.append(status.getStatusText());
-                        
-                        context.getSource().sendFeedback(Text.literal(info.toString()));
+                        context.getSource().sendFeedback(Text.translatable(
+                            "toriifind.source.check.api",
+                            sourceName,
+                            status.getStatusText()
+                        ));
                     });
                 });
             } else {
@@ -325,42 +341,44 @@ public class ToriiFindCommand {
                 com.fletime.toriifind.service.LocalDataService.checkAndUpdateDataSource(sourceName, dataSource)
                     .thenAcceptAsync(updated -> {
                         net.minecraft.client.MinecraftClient.getInstance().execute(() -> {
+                            String updateStatus = updated
+                                ? ToriiFind.translate("toriifind.source.check.updated").getString()
+                                : ToriiFind.translate("toriifind.source.check.latest").getString();
+
                             StringBuilder info = new StringBuilder();
-                            info.append("§6").append(sourceName).append(" §f(JSON模式) ");
-                            
-                            if (updated) {
-                                info.append("§a[已更新]");
-                            } else {
-                                info.append("§a[最新版本]");
-                            }
-                            
+                            info.append(ToriiFind.translate("toriifind.source.check.json", sourceName, updateStatus).getString());
+
                             // 显示版本信息（如果存在）
                             String version = com.fletime.toriifind.service.LocalDataService.getLocalVersion(
                                 com.fletime.toriifind.service.LocalDataService.getLocalDataFile(sourceName));
                             if (version != null && !version.isEmpty()) {
-                                info.append(" §7v").append(version);
+                                info.append(ToriiFind.translate("toriifind.source.check.version", version).getString());
                             }
-                            
+
                             context.getSource().sendFeedback(Text.literal(info.toString()));
-                            
+
                             // 如果有镜像，直接显示镜像状态
                             if (dataSource.getMirrorUrls() != null && dataSource.getMirrorUrls().length > 0) {
                                 MirrorStatusService.checkAllMirrors(dataSource).thenAccept(mirrorStatuses -> {
                                     net.minecraft.client.MinecraftClient.getInstance().execute(() -> {
                                         for (MirrorStatusService.MirrorStatus mirror : mirrorStatuses) {
-                                            String prefix = mirror.isPrimary() ? "§b[主]" : "§7[镜像]";
-                                            String statusIcon = mirror.isAvailable() ? "§a✓" : "§c✗";
-                                            
+                                            String prefix = mirror.isPrimary()
+                                                ? ToriiFind.translate("toriifind.source.check.mirror.primary").getString()
+                                                : ToriiFind.translate("toriifind.source.check.mirror.other").getString();
+                                            String statusIcon = mirror.isAvailable()
+                                                ? ToriiFind.translate("toriifind.source.check.mirror.available").getString()
+                                                : ToriiFind.translate("toriifind.source.check.mirror.unavailable").getString();
+
                                             StringBuilder line = new StringBuilder();
                                             line.append("  ").append(prefix).append(" ");
                                             line.append(statusIcon).append(" ");
                                             line.append("§f").append(mirror.getUrlDisplayName()).append(" ");
                                             line.append(mirror.getStatusText());
-                                            
+
                                             if (mirror.getVersion() != null) {
                                                 line.append(" §7").append(mirror.getVersion());
                                             }
-                                            
+
                                             context.getSource().sendFeedback(Text.literal(line.toString()));
                                         }
                                     });
@@ -369,7 +387,11 @@ public class ToriiFindCommand {
                         });
                     }).exceptionally(throwable -> {
                         net.minecraft.client.MinecraftClient.getInstance().execute(() -> {
-                            context.getSource().sendError(Text.literal("§c" + sourceName + " 检查失败: " + throwable.getMessage()));
+                            context.getSource().sendError(Text.translatable(
+                                "toriifind.source.check.failed",
+                                sourceName,
+                                throwable.getMessage()
+                            ));
                         });
                         return null;
                     });
@@ -383,22 +405,26 @@ public class ToriiFindCommand {
      * 重新加载配置文件
      */
     private static int reloadConfig(CommandContext<FabricClientCommandSource> context) {
-        context.getSource().sendFeedback(Text.literal("§6正在重新加载配置文件..."));
+        context.getSource().sendFeedback(ToriiFind.translate("toriifind.config.reload.start"));
         
         boolean success = ToriiFind.reloadConfig();
         
         if (success) {
-            context.getSource().sendFeedback(Text.literal("§a✓ 配置文件已成功重新加载"));
+            context.getSource().sendFeedback(ToriiFind.translate("toriifind.config.reload.success"));
             
             // 显示当前数据源信息
             String currentSource = ToriiFind.getCurrentSourceName();
             SourceConfig.DataSource source = ToriiFind.getAllSources().get(currentSource);
             if (source != null) {
-                String mode = source.isApiMode() ? "API模式" : "JSON模式";
-                context.getSource().sendFeedback(Text.literal("§6当前数据源: §a" + currentSource + " §f(" + mode + ")"));
+                String mode = source.isApiMode()
+                    ? ToriiFind.translate("toriifind.source.status.api_mode").getString()
+                    : ToriiFind.translate("toriifind.source.status.json_mode").getString();
+                context.getSource().sendFeedback(Text.translatable(
+                    "toriifind.source.current.simple", currentSource, mode
+                ));
             }
         } else {
-            context.getSource().sendError(Text.literal("§c✗ 配置文件重新加载失败，请检查配置文件格式"));
+            context.getSource().sendError(ToriiFind.translate("toriifind.config.reload.fail"));
         }
         
         return 1;
@@ -446,7 +472,7 @@ public class ToriiFindCommand {
             SourceConfig.DataSource currentSource = ToriiFind.getSourceConfig().getCurrentDataSource();
             if (currentSource.isApiMode()) {
                 // API模式：异步查询
-                context.getSource().sendFeedback(Text.literal("§6正在查询..."));
+                context.getSource().sendFeedback(ToriiFind.translate("toriifind.query.working"));
                 
                 java.util.concurrent.CompletableFuture.supplyAsync(() -> {
                     try {
@@ -578,7 +604,7 @@ public class ToriiFindCommand {
             
             if (currentSource.isApiMode()) {
                 // API模式：异步查询
-                context.getSource().sendFeedback(Text.literal("§6正在查询..."));
+                context.getSource().sendFeedback(ToriiFind.translate("toriifind.query.working"));
                 
                 java.util.concurrent.CompletableFuture.supplyAsync(() -> {
                     try {
@@ -688,13 +714,22 @@ public class ToriiFindCommand {
     }
 
     /**
-     * 展示零洲鸟居搜索结果
+     * 展示零洲鸟居的搜索结果
+     * @param context 命令上下文
+     * @param results 结果列表
      */
     private static void displayZerothResults(CommandContext<FabricClientCommandSource> context, List<Torii> results) {
-        context.getSource().sendFeedback(ToriiFind.translate("toriifind.divider"));
         if (results.isEmpty()) {
-            context.getSource().sendFeedback(ToriiFind.translate("toriifind.result.not_found"));
+            context.getSource().sendFeedback(ToriiFind.translate("toriifind.divider"));
+            context.getSource().sendFeedback(ToriiFind.translate("toriifind.result.empty.torii"));
+            context.getSource().sendFeedback(ToriiFind.translate("toriifind.divider"));
         } else {
+            context.getSource().sendFeedback(ToriiFind.translate("toriifind.divider"));
+            context.getSource().sendFeedback(ToriiFind.translate("toriifind.result.title", results.size()));
+            context.getSource().sendFeedback(ToriiFind.translate("toriifind.divider"));
+            context.getSource().sendFeedback(ToriiFind.translate("toriifind.result.header.torii"));
+            context.getSource().sendFeedback(ToriiFind.translate("toriifind.divider"));
+
             for (Torii torii : results) {
                 String formattedText = String.format(
                     ToriiFind.translate("toriifind.result.format.entry").getString(),
@@ -702,12 +737,14 @@ public class ToriiFindCommand {
                 );
                 MutableText baseText = Text.literal(formattedText + " ");
                 String wikiUrl = "https://wiki.ria.red/wiki/" + torii.name;
+
                 Style linkStyle = Style.EMPTY
                     .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, wikiUrl))
                     .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
-                                                  ToriiFind.translate("toriifind.result.wiki_hover", wikiUrl)))
+                        ToriiFind.translate("toriifind.result.wiki_hover", wikiUrl)))
                     .withFormatting(Formatting.UNDERLINE);
-                MutableText linkText = ((MutableText)ToriiFind.translate("toriifind.result.wiki_link")).setStyle(linkStyle);
+
+                MutableText linkText = ((MutableText) ToriiFind.translate("toriifind.result.wiki_link")).setStyle(linkStyle);
                 context.getSource().sendFeedback(baseText.append(linkText));
             }
             context.getSource().sendFeedback(ToriiFind.translate("toriifind.divider"));
@@ -715,13 +752,22 @@ public class ToriiFindCommand {
     }
 
     /**
-     * 展示后土境地搜索结果
+     * 展示后土数据的搜索结果
+     * @param context 命令上下文
+     * @param results 结果列表
      */
     private static void displayHoutuResults(CommandContext<FabricClientCommandSource> context, List<Houtu> results) {
-        context.getSource().sendFeedback(ToriiFind.translate("toriifind.divider"));
         if (results.isEmpty()) {
-            context.getSource().sendFeedback(ToriiFind.translate("toriifind.result.not_found"));
+            context.getSource().sendFeedback(ToriiFind.translate("toriifind.divider"));
+            context.getSource().sendFeedback(ToriiFind.translate("toriifind.result.empty.houtu"));
+            context.getSource().sendFeedback(ToriiFind.translate("toriifind.divider"));
         } else {
+            context.getSource().sendFeedback(ToriiFind.translate("toriifind.divider"));
+            context.getSource().sendFeedback(ToriiFind.translate("toriifind.result.title", results.size()));
+            context.getSource().sendFeedback(ToriiFind.translate("toriifind.divider"));
+            context.getSource().sendFeedback(ToriiFind.translate("toriifind.result.header.houtu"));
+            context.getSource().sendFeedback(ToriiFind.translate("toriifind.divider"));
+
             for (Houtu houtu : results) {
                 String formattedText = String.format(
                     ToriiFind.translate("toriifind.result.format.entry").getString(),
@@ -729,12 +775,14 @@ public class ToriiFindCommand {
                 );
                 MutableText baseText = Text.literal(formattedText + " ");
                 String wikiUrl = "https://wiki.ria.red/wiki/" + houtu.name;
+
                 Style linkStyle = Style.EMPTY
                     .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, wikiUrl))
                     .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
-                                                  ToriiFind.translate("toriifind.result.wiki_hover", wikiUrl)))
+                        ToriiFind.translate("toriifind.result.wiki_hover", wikiUrl)))
                     .withFormatting(Formatting.UNDERLINE);
-                MutableText linkText = ((MutableText)ToriiFind.translate("toriifind.result.wiki_link")).setStyle(linkStyle);
+
+                MutableText linkText = ((MutableText) ToriiFind.translate("toriifind.result.wiki_link")).setStyle(linkStyle);
                 context.getSource().sendFeedback(baseText.append(linkText));
             }
             context.getSource().sendFeedback(ToriiFind.translate("toriifind.divider"));
@@ -826,7 +874,9 @@ public class ToriiFindCommand {
     }
 
     /**
-     * 彩蛋命令，往公屏发一条消息 Ciallo～(∠・ω< )⌒☆
+     * 向公屏发送 𝑪𝒊𝒂𝒍𝒍𝒐～(∠・ω< )⌒★
+     * @param context 命令上下文
+     * @return 执行结果
      */
     private static int sendCialloMessage(CommandContext<FabricClientCommandSource> context) {
         MinecraftClient client = MinecraftClient.getInstance();
