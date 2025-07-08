@@ -1,0 +1,115 @@
+name: Create Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: '发布版本 (例如: 1.1.4)'
+        required: true
+        type: string
+      release_notes:
+        description: '发布说明'
+        required: false
+        type: string
+        default: '新版本发布'
+      prerelease:
+        description: '是否为预发布版本'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: 'microsoft'
+          
+      - name: Make gradle wrapper executable
+        run: chmod +x ./gradlew
+        
+      - name: Update version in gradle.properties
+        run: |
+          sed -i "s/mod_version=.*/mod_version=${{ github.event.inputs.version }}/g" gradle.properties
+          echo "Updated version to ${{ github.event.inputs.version }}"
+          
+      - name: Commit version update
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add gradle.properties
+          git commit -m "Bump version to ${{ github.event.inputs.version }}" || echo "No changes to commit"
+          
+      - name: Build release
+        run: ./gradlew clean build --no-daemon
+        
+      - name: Create Git tag
+        run: |
+          git tag -a "v${{ github.event.inputs.version }}" -m "Release v${{ github.event.inputs.version }}"
+          
+      - name: Push changes and tag
+        run: |
+          git push origin main
+          git push origin "v${{ github.event.inputs.version }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Get Minecraft and Fabric versions
+        id: versions
+        run: |
+          MC_VERSION=$(grep "minecraft_version=" gradle.properties | cut -d'=' -f2)
+          FABRIC_VERSION=$(grep "fabric_version=" gradle.properties | cut -d'=' -f2)
+          LOADER_VERSION=$(grep "loader_version=" gradle.properties | cut -d'=' -f2)
+          
+          echo "minecraft=$MC_VERSION" >> $GITHUB_OUTPUT
+          echo "fabric=$FABRIC_VERSION" >> $GITHUB_OUTPUT
+          echo "loader=$LOADER_VERSION" >> $GITHUB_OUTPUT
+          
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ github.event.inputs.version }}
+          name: ToriiFind v${{ github.event.inputs.version }}
+          files: build/libs/*.jar
+          prerelease: ${{ github.event.inputs.prerelease }}
+          body: |
+            ## 🎉 ToriiFind v${{ github.event.inputs.version }}
+            
+            ${{ github.event.inputs.release_notes }}
+            
+            ### 📁 下载文件
+            - `toriifind-${{ github.event.inputs.version }}.jar` - 主模组文件 (推荐下载)
+            - `toriifind-${{ github.event.inputs.version }}-sources.jar` - 源代码 (开发者可选)
+            
+            ### 🚀 安装方法
+            1. 确保已安装 **Fabric Loader ${{ steps.versions.outputs.loader }}** 或更高版本
+            2. 将 `toriifind-${{ github.event.inputs.version }}.jar` 文件放入 `.minecraft/mods` 文件夹
+            3. 启动游戏即可使用
+            
+            ### 📋 系统要求
+            - **Minecraft**: ${{ steps.versions.outputs.minecraft }}
+            - **Fabric Loader**: ${{ steps.versions.outputs.loader }}+
+            - **Fabric API**: ${{ steps.versions.outputs.fabric }}+
+            - **Java**: 21+
+            
+            ### 🔧 使用方法
+            - 按下 `Ctrl+F` (或自定义按键) 打开鸟居查找界面
+            - 输入地标名称进行搜索
+            - 支持中文、英文和拼音搜索
+            
+            ---
+            
+            [![Fabric](https://img.shields.io/badge/Fabric-${{ steps.versions.outputs.minecraft }}-blue)](https://fabricmc.net/)
+            [![Java](https://img.shields.io/badge/Java-21-orange)](https://www.oracle.com/java/)
+            [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
+            
+            *构建时间: $(date '+%Y-%m-%d %H:%M:%S UTC')*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -3,35 +3,68 @@
 # certain platforms or Java versions, and provides a first line of defence
 # against bad commits.
 
-name: build
+name: Build & Test
 on: 
   workflow_dispatch:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
 
 jobs:
   build:
     runs-on: ubuntu-24.04
     steps:
       # 检出仓库代码
-      - name: checkout repository
+      - name: Checkout repository
         uses: actions/checkout@v4
+        
       # 校验 gradle wrapper 的合法性
-      - name: validate gradle wrapper
+      - name: Validate gradle wrapper
         uses: gradle/actions/wrapper-validation@v4
+        
       # 设置 JDK 21 环境
-      - name: setup jdk
+      - name: Setup JDK
         uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'microsoft'
+          
+      # 缓存 Gradle 依赖
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+            
       # 赋予 gradlew 可执行权限（Linux 下必须）
-      - name: make gradle wrapper executable
+      - name: Make gradle wrapper executable
         run: chmod +x ./gradlew
+        
       # 执行构建
-      - name: build
-        run: ./gradlew build
+      - name: Build
+        run: ./gradlew clean build --no-daemon
+        
+      # 运行测试
+      - name: Run tests
+        run: ./gradlew test --no-daemon
+        continue-on-error: true
+        
+      # 获取版本信息
+      - name: Get version info
+        id: version
+        run: |
+          VERSION=$(grep "mod_version=" gradle.properties | cut -d'=' -f2)
+          echo "mod_version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Mod version: $VERSION"
+          
       # 上传构建产物（供后续步骤或手动下载）
-      - name: capture build artifacts
+      - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: Artifacts
+          name: ToriiFind-${{ steps.version.outputs.mod_version }}-build-${{ github.run_number }}
           path: build/libs/

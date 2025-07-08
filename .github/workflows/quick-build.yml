@@ -1,0 +1,85 @@
+name: Quick Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: '构建类型'
+        required: true
+        default: 'development'
+        type: choice
+        options:
+        - development
+        - release
+        - snapshot
+
+jobs:
+  quick-build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: 'microsoft'
+          
+      - name: Make gradle wrapper executable
+        run: chmod +x ./gradlew
+        
+      - name: Build JAR
+        run: |
+          echo "🔨 开始构建 JAR 文件..."
+          ./gradlew clean build --no-daemon
+          
+      - name: Get build info
+        id: build_info
+        run: |
+          VERSION=$(grep "mod_version=" gradle.properties | cut -d'=' -f2)
+          BUILD_TIME=$(date '+%Y-%m-%d %H:%M:%S UTC')
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+          
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "build_time=$BUILD_TIME" >> $GITHUB_OUTPUT
+          echo "commit_hash=$COMMIT_HASH" >> $GITHUB_OUTPUT
+          
+          echo "📋 构建信息:"
+          echo "版本: $VERSION"
+          echo "构建时间: $BUILD_TIME"
+          echo "提交哈希: $COMMIT_HASH"
+          echo "构建类型: ${{ github.event.inputs.build_type }}"
+          
+      - name: List build results
+        run: |
+          echo "📦 构建产物:"
+          ls -la build/libs/
+          
+          echo ""
+          echo "📊 文件大小:"
+          du -h build/libs/*.jar
+          
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: toriifind-${{ steps.build_info.outputs.version }}-${{ github.event.inputs.build_type }}-${{ steps.build_info.outputs.commit_hash }}
+          path: |
+            build/libs/*.jar
+            !build/libs/*-dev.jar
+          if-no-files-found: error
+          retention-days: 7
+          
+      - name: Build summary
+        run: |
+          echo "## 🎉 构建完成!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| 项目 | 信息 |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|------|" >> $GITHUB_STEP_SUMMARY
+          echo "| 🏷️ 版本 | ${{ steps.build_info.outputs.version }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🔨 构建类型 | ${{ github.event.inputs.build_type }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| ⏰ 构建时间 | ${{ steps.build_info.outputs.build_time }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🔗 提交 | ${{ steps.build_info.outputs.commit_hash }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "📥 构建产物已上传到 Actions 页面的 Artifacts 中。" >> $GITHUB_STEP_SUMMARY

@@ -1,0 +1,95 @@
+name: Merge Lynn Data Sources
+
+on:
+  schedule:
+    # 每天早上 8:00 UTC 自动运行
+    - cron: '0 8 * * *'
+  workflow_dispatch:
+    # 支持手动触发
+
+jobs:
+  merge-data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Download houtu.json
+        run: |
+          curl -L -o houtu.json "https://github.com/RainC7/RIA_Data/raw/refs/heads/main/data/landmark/houtu.json"
+          echo "Downloaded houtu.json"
+          
+      - name: Download zth.json
+        run: |
+          curl -L -o zth.json "https://github.com/RainC7/RIA_Data/raw/refs/heads/main/data/landmark/zth.json"
+          echo "Downloaded zth.json"
+          
+      - name: Merge JSON files
+        run: |
+          # 获取当前日期作为版本号
+          VERSION=$(date +%Y%m%d)
+          echo "Version: $VERSION"
+          
+          # 使用 jq 合并 JSON 文件
+          jq -n \
+            --arg version "$VERSION" \
+            --slurpfile houtu houtu.json \
+            --slurpfile zeroth zth.json \
+            '{
+              version: $version,
+              houtu: $houtu[0],
+              zeroth: $zeroth[0]
+            }' > merged-data.json
+          
+          echo "Merged JSON created with version: $VERSION"
+          
+      - name: Create output directory
+        run: |
+          mkdir -p data
+          
+      - name: Move merged file
+        run: |
+          mv merged-data.json data/lynn.json
+          echo "File moved to data/lynn.json"
+          
+      - name: Display merged file content
+        run: |
+          echo "Merged file content:"
+          cat data/lynn.json | jq '.'
+          echo "File size: $(wc -c < data/lynn.json) bytes"
+          
+      - name: Check git status
+        run: |
+          echo "Git status before commit:"
+          git status
+          echo "Files in data directory:"
+          ls -la data/
+          
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          # 添加文件到 git
+          git add data/lynn.json
+          
+          # 检查是否有变更（包括新文件）
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          
+          # 显示将要提交的变更
+          echo "Changes to commit:"
+          git diff --cached --name-status
+          
+          git commit -m "Auto-update lynn data source - $(date +%Y%m%d)"
+          git push
+          
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: lynn-data-${{ github.run_number }}
+          path: data/lynn.json
