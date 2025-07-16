@@ -1,5 +1,5 @@
 {
-  "version": "20250708",
+  "version": "20250716",
   "houtu": [
     {
       "id": "C-01",
@@ -3136,6 +3136,17 @@
         "x": 1897.0,
         "y": 67.0,
         "z": -4149.0
+      }
+    },
+    {
+      "id": 269,
+      "name": "HUNT岛",
+      "grade": "准级",
+      "status": "Normal",
+      "coordinates": {
+        "x": "Unknown",
+        "y": "Unknown",
+        "z": "Unknown"
       }
     }
   ]
