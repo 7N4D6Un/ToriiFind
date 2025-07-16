@@ -703,38 +703,133 @@ public class ToriiFindCommand {
 
     /**
      * 智能查询零洲鸟居
-     * 如果输入是纯数字，则按编号查询；否则按名称查询
+     * 如果输入是纯数字，则按编号和名称都查找，合并去重后显示；否则按名称查找
      */
     private static int searchZerothSmart(CommandContext<FabricClientCommandSource> context, String query) {
         query = query.trim();
-        
-        // 检查是否为纯数字
         if (query.matches("^\\d+$")) {
-            try {
-                int number = Integer.parseInt(query);
-                return searchZerothByNumber(context, number);
-            } catch (NumberFormatException e) {
-                // 如果数字太大，按名称查询
-                return searchZerothByNameOrPinyin(context, query);
+            // 纯数字，编号和名称都查
+            List<Torii> results = new ArrayList<>();
+            // 按编号查
+            SourceConfig.DataSource currentSource = ToriiFind.getSourceConfig().getCurrentDataSource();
+            if (currentSource != null && currentSource.isApiMode()) {
+                // Lynn API模式
+                // 合并编号和名称查找
+                context.getSource().sendFeedback(ToriiFind.translate("toriifind.query.working"));
+                java.util.concurrent.CompletableFuture<List<LynnApiService.LynnLandmark>> futureId = java.util.concurrent.CompletableFuture.supplyAsync(() -> {
+                    try {
+                        LynnApiService.LynnLandmark landmark = LynnApiService.getLandmarkById(currentSource.getApiBaseUrl(), "zth", query);
+                        List<LynnApiService.LynnLandmark> list = new ArrayList<>();
+                        if (landmark != null) list.add(landmark);
+                        return list;
+                    } catch (Exception e) { return new ArrayList<>(); }
+                });
+                java.util.concurrent.CompletableFuture<List<LynnApiService.LynnLandmark>> futureName = java.util.concurrent.CompletableFuture.supplyAsync(() -> {
+                    try {
+                        return LynnApiService.searchLandmarks(currentSource.getApiBaseUrl(), "zth", query);
+                    } catch (Exception e) { return new ArrayList<>(); }
+                });
+                futureId.thenCombine(futureName, (list1, list2) -> {
+                    // 合并去重
+                    java.util.LinkedHashMap<String, LynnApiService.LynnLandmark> map = new java.util.LinkedHashMap<>();
+                    for (LynnApiService.LynnLandmark l : list1) map.put(l.getId(), l);
+                    for (LynnApiService.LynnLandmark l : list2) map.put(l.getId(), l);
+                    return new ArrayList<>(map.values());
+                }).thenAcceptAsync(resultsList -> {
+                    net.minecraft.client.MinecraftClient.getInstance().execute(() -> {
+                        displayLynnResults(context, resultsList);
+                    });
+                });
+                return 1;
+            } else {
+                // JSON模式
+                try {
+                    List<Torii> toriiList = loadZerothData();
+                    // 按编号
+                    for (Torii torii : toriiList) {
+                        if (torii.id.equals(query)) results.add(torii);
+                    }
+                    // 按名称模糊
+                    for (Torii torii : toriiList) {
+                        if (torii.name.contains(query) || toPinyin(torii.name).toLowerCase().contains(query.toLowerCase())) {
+                            boolean exists = false;
+                            for (Torii t : results) if (t.id.equals(torii.id)) { exists = true; break; }
+                            if (!exists) results.add(torii);
+                        }
+                    }
+                    displayZerothResults(context, results);
+                } catch (Exception e) {
+                    context.getSource().sendError(ToriiFind.translate("toriifind.error.config", e.getMessage()));
+                }
+                return 1;
             }
         } else {
-            // 非纯数字，按名称查询
+            // 非纯数字，按名称查找
             return searchZerothByNameOrPinyin(context, query);
         }
     }
 
     /**
      * 智能查询后土境地
-     * 如果输入是纯数字，则按编号查询；否则按名称查询
+     * 如果输入是纯数字，则按编号和名称都查找，合并去重后显示；否则按名称查找
      */
     private static int searchHoutuSmart(CommandContext<FabricClientCommandSource> context, String query) {
         query = query.trim();
-        
-        // 检查是否为纯数字
         if (query.matches("^\\d+$")) {
-            return searchHoutuByNumber(context, query);
+            // 纯数字，编号和名称都查
+            List<Houtu> results = new ArrayList<>();
+            SourceConfig.DataSource currentSource = ToriiFind.getSourceConfig().getCurrentDataSource();
+            if (currentSource != null && currentSource.isApiMode()) {
+                // Lynn API模式
+                context.getSource().sendFeedback(ToriiFind.translate("toriifind.query.working"));
+                java.util.concurrent.CompletableFuture<List<LynnApiService.LynnLandmark>> futureId = java.util.concurrent.CompletableFuture.supplyAsync(() -> {
+                    try {
+                        LynnApiService.LynnLandmark landmark = LynnApiService.getLandmarkById(currentSource.getApiBaseUrl(), "houtu", query);
+                        List<LynnApiService.LynnLandmark> list = new ArrayList<>();
+                        if (landmark != null) list.add(landmark);
+                        return list;
+                    } catch (Exception e) { return new ArrayList<>(); }
+                });
+                java.util.concurrent.CompletableFuture<List<LynnApiService.LynnLandmark>> futureName = java.util.concurrent.CompletableFuture.supplyAsync(() -> {
+                    try {
+                        return LynnApiService.searchLandmarks(currentSource.getApiBaseUrl(), "houtu", query);
+                    } catch (Exception e) { return new ArrayList<>(); }
+                });
+                futureId.thenCombine(futureName, (list1, list2) -> {
+                    java.util.LinkedHashMap<String, LynnApiService.LynnLandmark> map = new java.util.LinkedHashMap<>();
+                    for (LynnApiService.LynnLandmark l : list1) map.put(l.getId(), l);
+                    for (LynnApiService.LynnLandmark l : list2) map.put(l.getId(), l);
+                    return new ArrayList<>(map.values());
+                }).thenAcceptAsync(resultsList -> {
+                    net.minecraft.client.MinecraftClient.getInstance().execute(() -> {
+                        displayLynnResults(context, resultsList);
+                    });
+                });
+                return 1;
+            } else {
+                // JSON模式
+                try {
+                    List<Houtu> houtuList = loadHoutuData();
+                    // 按编号
+                    for (Houtu houtu : houtuList) {
+                        if (houtu.id.contains(query)) results.add(houtu);
+                    }
+                    // 按名称模糊
+                    for (Houtu houtu : houtuList) {
+                        if (houtu.name.contains(query) || toPinyin(houtu.name).toLowerCase().contains(query.toLowerCase())) {
+                            boolean exists = false;
+                            for (Houtu h : results) if (h.id.equals(houtu.id)) { exists = true; break; }
+                            if (!exists) results.add(houtu);
+                        }
+                    }
+                    displayHoutuResults(context, results);
+                } catch (Exception e) {
+                    context.getSource().sendError(ToriiFind.translate("toriifind.error.config", e.getMessage()));
+                }
+                return 1;
+            }
         } else {
-            // 非纯数字，按名称查询
+            // 非纯数字，按名称查找
             return searchHoutuByNameOrPinyin(context, query);
         }
     }
