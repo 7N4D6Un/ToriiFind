@@ -153,10 +153,8 @@ public class ToriiFindCommand {
     /**
      * 注册命令结构
      * /toriifind help
-     * /toriifind zeroth num <number>
-     * /toriifind zeroth name <keyword>
-     * /toriifind houtu num <number>
-     * /toriifind houtu name <keyword>
+     * /toriifind zeroth <number or keyword>
+     * /toriifind houtu <number or keyword>
      * /toriifind source list
      * /toriifind source switch <name>
      * /toriifind source current
@@ -170,19 +168,11 @@ public class ToriiFindCommand {
                 .then(literal("help")
                     .executes(context -> showHelp(context)))
                 .then(literal("zeroth")
-                    .then(literal("num")
-                        .then(argument("number", IntegerArgumentType.integer(1))
-                            .executes(context -> searchZerothByNumber(context, IntegerArgumentType.getInteger(context, "number")))))
-                    .then(literal("name")
-                        .then(argument("keyword", StringArgumentType.greedyString())
-                            .executes(context -> searchZerothByNameOrPinyin(context, StringArgumentType.getString(context, "keyword"))))))
+                    .then(argument("query", StringArgumentType.greedyString())
+                        .executes(context -> searchZerothSmart(context, StringArgumentType.getString(context, "query")))))
                 .then(literal("houtu")
-                    .then(literal("num")
-                        .then(argument("number", StringArgumentType.string())
-                            .executes(context -> searchHoutuByNumber(context, StringArgumentType.getString(context, "number")))))
-                    .then(literal("name")
-                        .then(argument("keyword", StringArgumentType.greedyString())
-                            .executes(context -> searchHoutuByNameOrPinyin(context, StringArgumentType.getString(context, "keyword"))))))
+                    .then(argument("query", StringArgumentType.greedyString())
+                        .executes(context -> searchHoutuSmart(context, StringArgumentType.getString(context, "query")))))
                 .then(literal("source")
                     .then(literal("list")
                         .executes(context -> listSources(context)))
@@ -208,10 +198,8 @@ public class ToriiFindCommand {
         context.getSource().sendFeedback(ToriiFind.translate("toriifind.help.title"));
         context.getSource().sendFeedback(ToriiFind.translate("toriifind.divider"));
         context.getSource().sendFeedback(ToriiFind.translate("toriifind.help.command.help"));
-        context.getSource().sendFeedback(ToriiFind.translate("toriifind.help.command.zeroth_num"));
-        context.getSource().sendFeedback(ToriiFind.translate("toriifind.help.command.zeroth_name"));
-        context.getSource().sendFeedback(ToriiFind.translate("toriifind.help.command.houtu_num"));
-        context.getSource().sendFeedback(ToriiFind.translate("toriifind.help.command.houtu_name"));
+        context.getSource().sendFeedback(ToriiFind.translate("toriifind.help.command.zeroth_smart"));
+        context.getSource().sendFeedback(ToriiFind.translate("toriifind.help.command.houtu_smart"));
         context.getSource().sendFeedback(ToriiFind.translate("toriifind.help.command.source.list"));
         context.getSource().sendFeedback(ToriiFind.translate("toriifind.help.command.source.switch"));
         context.getSource().sendFeedback(ToriiFind.translate("toriifind.help.command.source.current"));
@@ -711,6 +699,44 @@ public class ToriiFindCommand {
             context.getSource().sendError(ToriiFind.translate("toriifind.error.config", e.getMessage()));
         }
         return 1;
+    }
+
+    /**
+     * 智能查询零洲鸟居
+     * 如果输入是纯数字，则按编号查询；否则按名称查询
+     */
+    private static int searchZerothSmart(CommandContext<FabricClientCommandSource> context, String query) {
+        query = query.trim();
+        
+        // 检查是否为纯数字
+        if (query.matches("^\\d+$")) {
+            try {
+                int number = Integer.parseInt(query);
+                return searchZerothByNumber(context, number);
+            } catch (NumberFormatException e) {
+                // 如果数字太大，按名称查询
+                return searchZerothByNameOrPinyin(context, query);
+            }
+        } else {
+            // 非纯数字，按名称查询
+            return searchZerothByNameOrPinyin(context, query);
+        }
+    }
+
+    /**
+     * 智能查询后土境地
+     * 如果输入是纯数字，则按编号查询；否则按名称查询
+     */
+    private static int searchHoutuSmart(CommandContext<FabricClientCommandSource> context, String query) {
+        query = query.trim();
+        
+        // 检查是否为纯数字
+        if (query.matches("^\\d+$")) {
+            return searchHoutuByNumber(context, query);
+        } else {
+            // 非纯数字，按名称查询
+            return searchHoutuByNameOrPinyin(context, query);
+        }
     }
 
     /**

@@ -4,10 +4,8 @@
   
   "toriifind.help.title": "§6§lToriiFind 指令列表",
   "toriifind.help.command.help": "§7/toriifind help §8| §f显示指令信息",
-  "toriifind.help.command.zeroth_num": "§7/toriifind zeroth num <编号> §8| §f按编号查找零洲鸟居",
-  "toriifind.help.command.zeroth_name": "§7/toriifind zeroth name <关键字> §8| §f按名称关键字或拼音查找零洲鸟居",
-  "toriifind.help.command.houtu_num": "§7/toriifind houtu num <编号> §8| §f按编号查找后土境地",
-  "toriifind.help.command.houtu_name": "§7/toriifind houtu name <关键字> §8| §f按名称关键字或拼音查找后土境地",
+  "toriifind.help.command.zeroth_smart": "§7/toriifind zeroth <编号或关键字> §8| §f智能查询零洲鸟居（支持编号和名称）",
+  "toriifind.help.command.houtu_smart": "§7/toriifind houtu <编号或关键字> §8| §f智能查询后土境地（支持编号和名称）",
   "toriifind.help.command.source.list": "§7/toriifind source list §8| §f列出所有可用的数据源",
   "toriifind.help.command.source.switch": "§7/toriifind source switch <name> §8| §f切换到指定数据源",
   "toriifind.help.command.source.current": "§7/toriifind source current §8| §f显示当前使用的数据源",

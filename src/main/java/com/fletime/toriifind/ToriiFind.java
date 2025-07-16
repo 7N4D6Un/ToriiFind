@@ -22,7 +22,7 @@ import java.util.Map;
 
 public class ToriiFind implements ClientModInitializer {
 	public static final String MOD_ID = "toriifind";
-	public static final int CONFIG_VERSION = 5;
+	public static final int CONFIG_VERSION = 6; // 当前内置的数据版本
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 	
 	private static SourceConfig sourceConfig;
