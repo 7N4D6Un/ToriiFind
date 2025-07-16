@@ -7,7 +7,11 @@
 	"authors": [
 		"FleTime"
 	],
+	"contributors": [
+		"Venti_Lynn"
+	],
 	"contact": {
+		"issues": "https://github.com/7N4D6Un/ToriiFind/issues",
 		"sources": "https://github.com/7N4D6Un/ToriiFind"
 	},
 	"license": "CC0-1.0",
@@ -23,8 +27,5 @@
 		"minecraft": ">=1.20.1 <=1.21.4",
 		"java": ">=17",
 		"fabric-api": "*"
-	},
-	"suggests": {
-		"another-mod": "*"
 	}
 }
