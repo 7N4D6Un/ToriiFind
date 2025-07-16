@@ -153,10 +153,8 @@ public class ToriiFindCommand {
     /**
      * 注册命令结构
      * /toriifind help
-     * /toriifind zeroth num <number>
-     * /toriifind zeroth name <keyword>
-     * /toriifind houtu num <number>
-     * /toriifind houtu name <keyword>
+     * /toriifind zeroth <number or keyword>
+     * /toriifind houtu <number or keyword>
      * /toriifind source list
      * /toriifind source switch <name>
      * /toriifind source current
@@ -170,24 +168,26 @@ public class ToriiFindCommand {
                 .then(literal("help")
                     .executes(context -> showHelp(context)))
                 .then(literal("zeroth")
-                    .then(literal("num")
-                        .then(argument("number", IntegerArgumentType.integer(1))
-                            .executes(context -> searchZerothByNumber(context, IntegerArgumentType.getInteger(context, "number")))))
-                    .then(literal("name")
-                        .then(argument("keyword", StringArgumentType.greedyString())
-                            .executes(context -> searchZerothByNameOrPinyin(context, StringArgumentType.getString(context, "keyword"))))))
+                    .then(argument("query", StringArgumentType.greedyString())
+                        .executes(context -> searchZerothSmart(context, StringArgumentType.getString(context, "query")))))
                 .then(literal("houtu")
-                    .then(literal("num")
-                        .then(argument("number", StringArgumentType.string())
-                            .executes(context -> searchHoutuByNumber(context, StringArgumentType.getString(context, "number")))))
-                    .then(literal("name")
-                        .then(argument("keyword", StringArgumentType.greedyString())
-                            .executes(context -> searchHoutuByNameOrPinyin(context, StringArgumentType.getString(context, "keyword"))))))
+                    .then(argument("query", StringArgumentType.greedyString())
+                        .executes(context -> searchHoutuSmart(context, StringArgumentType.getString(context, "query")))))
                 .then(literal("source")
                     .then(literal("list")
                         .executes(context -> listSources(context)))
                     .then(literal("switch")
                         .then(argument("name", StringArgumentType.string())
+                            .suggests((context, builder) -> {
+                                // 自动补全所有可用数据源
+                                for (String name : ToriiFind.getAllSources().keySet()) {
+                                    SourceConfig.DataSource ds = ToriiFind.getAllSources().get(name);
+                                    if (ds.isEnabled()) {
+                                        builder.suggest(name);
+                                    }
+                                }
+                                return builder.buildFuture();
+                            })
                             .executes(context -> switchSource(context, StringArgumentType.getString(context, "name")))))
                     .then(literal("current")
                         .executes(context -> showCurrentSource(context)))
@@ -208,10 +208,8 @@ public class ToriiFindCommand {
         context.getSource().sendFeedback(ToriiFind.translate("toriifind.help.title"));
         context.getSource().sendFeedback(ToriiFind.translate("toriifind.divider"));
         context.getSource().sendFeedback(ToriiFind.translate("toriifind.help.command.help"));
-        context.getSource().sendFeedback(ToriiFind.translate("toriifind.help.command.zeroth_num"));
-        context.getSource().sendFeedback(ToriiFind.translate("toriifind.help.command.zeroth_name"));
-        context.getSource().sendFeedback(ToriiFind.translate("toriifind.help.command.houtu_num"));
-        context.getSource().sendFeedback(ToriiFind.translate("toriifind.help.command.houtu_name"));
+        context.getSource().sendFeedback(ToriiFind.translate("toriifind.help.command.zeroth_smart"));
+        context.getSource().sendFeedback(ToriiFind.translate("toriifind.help.command.houtu_smart"));
         context.getSource().sendFeedback(ToriiFind.translate("toriifind.help.command.source.list"));
         context.getSource().sendFeedback(ToriiFind.translate("toriifind.help.command.source.switch"));
         context.getSource().sendFeedback(ToriiFind.translate("toriifind.help.command.source.current"));
@@ -714,6 +712,150 @@ public class ToriiFindCommand {
     }
 
     /**
+     * 智能查询零洲鸟居
+     * 如果输入是纯数字，则按编号和名称都查找，合并去重后显示；否则按名称查找
+     */
+    private static int searchZerothSmart(CommandContext<FabricClientCommandSource> context, String query) {
+        query = query.trim();
+        // 判断输入是否为纯数字
+        if (query.matches("^\\d+$")) {
+            // 获取当前数据源
+            SourceConfig.DataSource currentSource = ToriiFind.getSourceConfig().getCurrentDataSource();
+            final String finalQuery = query;
+            final SourceConfig.DataSource finalSource = currentSource;
+            if (currentSource != null && currentSource.isApiMode()) {
+                // API模式：编号和名称分别异步查找，然后合并去重
+                context.getSource().sendFeedback(ToriiFind.translate("toriifind.query.working"));
+                // 按编号查找
+                java.util.concurrent.CompletableFuture<List<LynnApiService.LynnLandmark>> futureId = java.util.concurrent.CompletableFuture.supplyAsync(() -> {
+                    try {
+                        LynnApiService.LynnLandmark landmark = LynnApiService.getLandmarkById(finalSource.getApiBaseUrl(), "zth", finalQuery);
+                        List<LynnApiService.LynnLandmark> list = new ArrayList<>();
+                        if (landmark != null) list.add(landmark);
+                        return list;
+                    } catch (Exception e) { return new ArrayList<>(); }
+                });
+                // 按名称查找
+                java.util.concurrent.CompletableFuture<List<LynnApiService.LynnLandmark>> futureName = java.util.concurrent.CompletableFuture.supplyAsync(() -> {
+                    try {
+                        return LynnApiService.searchLandmarks(finalSource.getApiBaseUrl(), "zth", finalQuery);
+                    } catch (Exception e) { return new ArrayList<>(); }
+                });
+                // 合并编号和名称查找结果，去重后显示
+                futureId.thenCombine(futureName, (list1, list2) -> {
+                    java.util.LinkedHashMap<String, LynnApiService.LynnLandmark> map = new java.util.LinkedHashMap<>();
+                    for (LynnApiService.LynnLandmark l : list1) map.put(l.getId(), l);
+                    for (LynnApiService.LynnLandmark l : list2) map.put(l.getId(), l);
+                    return new ArrayList<>(map.values());
+                }).thenAcceptAsync(resultsList -> {
+                    net.minecraft.client.MinecraftClient.getInstance().execute(() -> {
+                        displayLynnResults(context, resultsList);
+                    });
+                });
+                return 1;
+            } else {
+                // JSON模式：编号和名称都查找，合并去重
+                try {
+                    List<Torii> toriiList = loadZerothData();
+                    List<Torii> results = new ArrayList<>();
+                    // 按编号查找
+                    for (Torii torii : toriiList) {
+                        if (torii.id.equals(query)) results.add(torii);
+                    }
+                    // 按名称（包括拼音）模糊查找
+                    for (Torii torii : toriiList) {
+                        if (torii.name.contains(query) || toPinyin(torii.name).toLowerCase().contains(query.toLowerCase())) {
+                            boolean exists = false;
+                            for (Torii t : results) if (t.id.equals(torii.id)) { exists = true; break; }
+                            if (!exists) results.add(torii);
+                        }
+                    }
+                    // 显示合并后的结果
+                    displayZerothResults(context, results);
+                } catch (Exception e) {
+                    context.getSource().sendError(ToriiFind.translate("toriifind.error.config", e.getMessage()));
+                }
+                return 1;
+            }
+        } else {
+            // 非纯数字，直接按名称查找（支持拼音）
+            return searchZerothByNameOrPinyin(context, query);
+        }
+    }
+
+    /**
+     * 智能查询后土境地
+     * 如果输入是纯数字，则按编号和名称都查找，合并去重后显示；否则按名称查找
+     */
+    private static int searchHoutuSmart(CommandContext<FabricClientCommandSource> context, String query) {
+        query = query.trim();
+        // 判断输入是否为纯数字
+        if (query.matches("^\\d+$")) {
+            // 获取当前数据源
+            SourceConfig.DataSource currentSource = ToriiFind.getSourceConfig().getCurrentDataSource();
+            final String finalQuery = query;
+            final SourceConfig.DataSource finalSource = currentSource;
+            if (currentSource != null && currentSource.isApiMode()) {
+                // API模式：编号和名称分别异步查找，然后合并去重
+                context.getSource().sendFeedback(ToriiFind.translate("toriifind.query.working"));
+                // 按编号查找
+                java.util.concurrent.CompletableFuture<List<LynnApiService.LynnLandmark>> futureId = java.util.concurrent.CompletableFuture.supplyAsync(() -> {
+                    try {
+                        LynnApiService.LynnLandmark landmark = LynnApiService.getLandmarkById(finalSource.getApiBaseUrl(), "houtu", finalQuery);
+                        List<LynnApiService.LynnLandmark> list = new ArrayList<>();
+                        if (landmark != null) list.add(landmark);
+                        return list;
+                    } catch (Exception e) { return new ArrayList<>(); }
+                });
+                // 按名称查找
+                java.util.concurrent.CompletableFuture<List<LynnApiService.LynnLandmark>> futureName = java.util.concurrent.CompletableFuture.supplyAsync(() -> {
+                    try {
+                        return LynnApiService.searchLandmarks(finalSource.getApiBaseUrl(), "houtu", finalQuery);
+                    } catch (Exception e) { return new ArrayList<>(); }
+                });
+                // 合并编号和名称查找结果，去重后显示
+                futureId.thenCombine(futureName, (list1, list2) -> {
+                    java.util.LinkedHashMap<String, LynnApiService.LynnLandmark> map = new java.util.LinkedHashMap<>();
+                    for (LynnApiService.LynnLandmark l : list1) map.put(l.getId(), l);
+                    for (LynnApiService.LynnLandmark l : list2) map.put(l.getId(), l);
+                    return new ArrayList<>(map.values());
+                }).thenAcceptAsync(resultsList -> {
+                    net.minecraft.client.MinecraftClient.getInstance().execute(() -> {
+                        displayLynnResults(context, resultsList);
+                    });
+                });
+                return 1;
+            } else {
+                // JSON模式：编号和名称都查找，合并去重
+                try {
+                    List<Houtu> houtuList = loadHoutuData();
+                    List<Houtu> results = new ArrayList<>();
+                    // 按编号查找
+                    for (Houtu houtu : houtuList) {
+                        if (houtu.id.contains(query)) results.add(houtu);
+                    }
+                    // 按名称（包括拼音）模糊查找
+                    for (Houtu houtu : houtuList) {
+                        if (houtu.name.contains(query) || toPinyin(houtu.name).toLowerCase().contains(query.toLowerCase())) {
+                            boolean exists = false;
+                            for (Houtu h : results) if (h.id.equals(houtu.id)) { exists = true; break; }
+                            if (!exists) results.add(houtu);
+                        }
+                    }
+                    // 显示合并后的结果
+                    displayHoutuResults(context, results);
+                } catch (Exception e) {
+                    context.getSource().sendError(ToriiFind.translate("toriifind.error.config", e.getMessage()));
+                }
+                return 1;
+            }
+        } else {
+            // 非纯数字，直接按名称查找（支持拼音）
+            return searchHoutuByNameOrPinyin(context, query);
+        }
+    }
+
+    /**
      * 展示零洲鸟居的搜索结果
      * @param context 命令上下文
      * @param results 结果列表
@@ -795,18 +937,23 @@ public class ToriiFindCommand {
      * @throws IOException 读取异常
      */
     private static List<Torii> loadZerothData() throws IOException {
-        // 首先尝试从本地文件读取
-        Path localFile = com.fletime.toriifind.service.LocalDataService.getLocalDataFile("fletime");
-        if (Files.exists(localFile)) {
+        // 判断当前数据源是否为 local
+        String currentSource = ToriiFind.getCurrentSourceName();
+        if ("local".equals(currentSource)) {
+            Path configDir = net.fabricmc.loader.api.FabricLoader.getInstance().getConfigDir();
+            Path configFile = configDir.resolve("toriifind.json");
+            return loadZerothDataFromFile(configFile);
+        }
+        // 其它数据源逻辑不变
+        Path localFile = com.fletime.toriifind.service.LocalDataService.getLocalDataFile(currentSource);
+        if (java.nio.file.Files.exists(localFile)) {
             try {
                 return loadZerothDataFromFile(localFile);
             } catch (Exception e) {
                 System.err.println("[ToriiFind] 读取本地零洲数据失败，尝试从传统配置文件读取: " + e.getMessage());
             }
         }
-        
-        // 回退到传统配置文件
-        Path configDir = FabricLoader.getInstance().getConfigDir();
+        Path configDir = net.fabricmc.loader.api.FabricLoader.getInstance().getConfigDir();
         Path configFile = configDir.resolve("toriifind.json");
         return loadZerothDataFromFile(configFile);
     }
@@ -837,18 +984,23 @@ public class ToriiFindCommand {
      * @throws IOException 读取异常
      */
     private static List<Houtu> loadHoutuData() throws IOException {
-        // 首先尝试从本地文件读取
-        Path localFile = com.fletime.toriifind.service.LocalDataService.getLocalDataFile("fletime");
-        if (Files.exists(localFile)) {
+        // 判断当前数据源是否为 local
+        String currentSource = ToriiFind.getCurrentSourceName();
+        if ("local".equals(currentSource)) {
+            Path configDir = net.fabricmc.loader.api.FabricLoader.getInstance().getConfigDir();
+            Path configFile = configDir.resolve("toriifind.json");
+            return loadHoutuDataFromFile(configFile);
+        }
+        // 其它数据源逻辑不变
+        Path localFile = com.fletime.toriifind.service.LocalDataService.getLocalDataFile(currentSource);
+        if (java.nio.file.Files.exists(localFile)) {
             try {
                 return loadHoutuDataFromFile(localFile);
             } catch (Exception e) {
                 System.err.println("[ToriiFind] 读取本地后土数据失败，尝试从传统配置文件读取: " + e.getMessage());
             }
         }
-        
-        // 回退到传统配置文件
-        Path configDir = FabricLoader.getInstance().getConfigDir();
+        Path configDir = net.fabricmc.loader.api.FabricLoader.getInstance().getConfigDir();
         Path configFile = configDir.resolve("toriifind.json");
         return loadHoutuDataFromFile(configFile);
     }

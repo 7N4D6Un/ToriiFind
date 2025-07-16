@@ -196,7 +196,12 @@ public class SourceConfig {
     
     private static SourceConfig createDefaultConfig() {
         SourceConfig config = new SourceConfig();
-        
+        // 添加本地数据源
+        config.sources.put("local", new DataSource(
+            "本地数据源",
+            null,
+            true
+        ));
         // 添加默认的fletime源
         config.sources.put("fletime", new DataSource(
             "FleTime源",
