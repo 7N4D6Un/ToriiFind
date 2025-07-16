@@ -707,30 +707,32 @@ public class ToriiFindCommand {
      */
     private static int searchZerothSmart(CommandContext<FabricClientCommandSource> context, String query) {
         query = query.trim();
+        // 判断输入是否为纯数字
         if (query.matches("^\\d+$")) {
-            // 纯数字，编号和名称都查
-            List<Torii> results = new ArrayList<>();
-            // 按编号查
+            // 获取当前数据源
             SourceConfig.DataSource currentSource = ToriiFind.getSourceConfig().getCurrentDataSource();
+            final String finalQuery = query;
+            final SourceConfig.DataSource finalSource = currentSource;
             if (currentSource != null && currentSource.isApiMode()) {
-                // Lynn API模式
-                // 合并编号和名称查找
+                // API模式：编号和名称分别异步查找，然后合并去重
                 context.getSource().sendFeedback(ToriiFind.translate("toriifind.query.working"));
+                // 按编号查找
                 java.util.concurrent.CompletableFuture<List<LynnApiService.LynnLandmark>> futureId = java.util.concurrent.CompletableFuture.supplyAsync(() -> {
                     try {
-                        LynnApiService.LynnLandmark landmark = LynnApiService.getLandmarkById(currentSource.getApiBaseUrl(), "zth", query);
+                        LynnApiService.LynnLandmark landmark = LynnApiService.getLandmarkById(finalSource.getApiBaseUrl(), "zth", finalQuery);
                         List<LynnApiService.LynnLandmark> list = new ArrayList<>();
                         if (landmark != null) list.add(landmark);
                         return list;
                     } catch (Exception e) { return new ArrayList<>(); }
                 });
+                // 按名称查找
                 java.util.concurrent.CompletableFuture<List<LynnApiService.LynnLandmark>> futureName = java.util.concurrent.CompletableFuture.supplyAsync(() -> {
                     try {
-                        return LynnApiService.searchLandmarks(currentSource.getApiBaseUrl(), "zth", query);
+                        return LynnApiService.searchLandmarks(finalSource.getApiBaseUrl(), "zth", finalQuery);
                     } catch (Exception e) { return new ArrayList<>(); }
                 });
+                // 合并编号和名称查找结果，去重后显示
                 futureId.thenCombine(futureName, (list1, list2) -> {
-                    // 合并去重
                     java.util.LinkedHashMap<String, LynnApiService.LynnLandmark> map = new java.util.LinkedHashMap<>();
                     for (LynnApiService.LynnLandmark l : list1) map.put(l.getId(), l);
                     for (LynnApiService.LynnLandmark l : list2) map.put(l.getId(), l);
@@ -742,14 +744,15 @@ public class ToriiFindCommand {
                 });
                 return 1;
             } else {
-                // JSON模式
+                // JSON模式：编号和名称都查找，合并去重
                 try {
                     List<Torii> toriiList = loadZerothData();
-                    // 按编号
+                    List<Torii> results = new ArrayList<>();
+                    // 按编号查找
                     for (Torii torii : toriiList) {
                         if (torii.id.equals(query)) results.add(torii);
                     }
-                    // 按名称模糊
+                    // 按名称（包括拼音）模糊查找
                     for (Torii torii : toriiList) {
                         if (torii.name.contains(query) || toPinyin(torii.name).toLowerCase().contains(query.toLowerCase())) {
                             boolean exists = false;
@@ -757,6 +760,7 @@ public class ToriiFindCommand {
                             if (!exists) results.add(torii);
                         }
                     }
+                    // 显示合并后的结果
                     displayZerothResults(context, results);
                 } catch (Exception e) {
                     context.getSource().sendError(ToriiFind.translate("toriifind.error.config", e.getMessage()));
@@ -764,7 +768,7 @@ public class ToriiFindCommand {
                 return 1;
             }
         } else {
-            // 非纯数字，按名称查找
+            // 非纯数字，直接按名称查找（支持拼音）
             return searchZerothByNameOrPinyin(context, query);
         }
     }
@@ -775,26 +779,31 @@ public class ToriiFindCommand {
      */
     private static int searchHoutuSmart(CommandContext<FabricClientCommandSource> context, String query) {
         query = query.trim();
+        // 判断输入是否为纯数字
         if (query.matches("^\\d+$")) {
-            // 纯数字，编号和名称都查
-            List<Houtu> results = new ArrayList<>();
+            // 获取当前数据源
             SourceConfig.DataSource currentSource = ToriiFind.getSourceConfig().getCurrentDataSource();
+            final String finalQuery = query;
+            final SourceConfig.DataSource finalSource = currentSource;
             if (currentSource != null && currentSource.isApiMode()) {
-                // Lynn API模式
+                // API模式：编号和名称分别异步查找，然后合并去重
                 context.getSource().sendFeedback(ToriiFind.translate("toriifind.query.working"));
+                // 按编号查找
                 java.util.concurrent.CompletableFuture<List<LynnApiService.LynnLandmark>> futureId = java.util.concurrent.CompletableFuture.supplyAsync(() -> {
                     try {
-                        LynnApiService.LynnLandmark landmark = LynnApiService.getLandmarkById(currentSource.getApiBaseUrl(), "houtu", query);
+                        LynnApiService.LynnLandmark landmark = LynnApiService.getLandmarkById(finalSource.getApiBaseUrl(), "houtu", finalQuery);
                         List<LynnApiService.LynnLandmark> list = new ArrayList<>();
                         if (landmark != null) list.add(landmark);
                         return list;
                     } catch (Exception e) { return new ArrayList<>(); }
                 });
+                // 按名称查找
                 java.util.concurrent.CompletableFuture<List<LynnApiService.LynnLandmark>> futureName = java.util.concurrent.CompletableFuture.supplyAsync(() -> {
                     try {
-                        return LynnApiService.searchLandmarks(currentSource.getApiBaseUrl(), "houtu", query);
+                        return LynnApiService.searchLandmarks(finalSource.getApiBaseUrl(), "houtu", finalQuery);
                     } catch (Exception e) { return new ArrayList<>(); }
                 });
+                // 合并编号和名称查找结果，去重后显示
                 futureId.thenCombine(futureName, (list1, list2) -> {
                     java.util.LinkedHashMap<String, LynnApiService.LynnLandmark> map = new java.util.LinkedHashMap<>();
                     for (LynnApiService.LynnLandmark l : list1) map.put(l.getId(), l);
@@ -807,14 +816,15 @@ public class ToriiFindCommand {
                 });
                 return 1;
             } else {
-                // JSON模式
+                // JSON模式：编号和名称都查找，合并去重
                 try {
                     List<Houtu> houtuList = loadHoutuData();
-                    // 按编号
+                    List<Houtu> results = new ArrayList<>();
+                    // 按编号查找
                     for (Houtu houtu : houtuList) {
                         if (houtu.id.contains(query)) results.add(houtu);
                     }
-                    // 按名称模糊
+                    // 按名称（包括拼音）模糊查找
                     for (Houtu houtu : houtuList) {
                         if (houtu.name.contains(query) || toPinyin(houtu.name).toLowerCase().contains(query.toLowerCase())) {
                             boolean exists = false;
@@ -822,6 +832,7 @@ public class ToriiFindCommand {
                             if (!exists) results.add(houtu);
                         }
                     }
+                    // 显示合并后的结果
                     displayHoutuResults(context, results);
                 } catch (Exception e) {
                     context.getSource().sendError(ToriiFind.translate("toriifind.error.config", e.getMessage()));
@@ -829,7 +840,7 @@ public class ToriiFindCommand {
                 return 1;
             }
         } else {
-            // 非纯数字，按名称查找
+            // 非纯数字，直接按名称查找（支持拼音）
             return searchHoutuByNameOrPinyin(context, query);
         }
     }
