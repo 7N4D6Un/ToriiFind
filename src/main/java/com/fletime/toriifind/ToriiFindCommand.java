@@ -927,18 +927,23 @@ public class ToriiFindCommand {
      * @throws IOException 读取异常
      */
     private static List<Torii> loadZerothData() throws IOException {
-        // 首先尝试从本地文件读取
-        Path localFile = com.fletime.toriifind.service.LocalDataService.getLocalDataFile("fletime");
-        if (Files.exists(localFile)) {
+        // 判断当前数据源是否为 local
+        String currentSource = ToriiFind.getCurrentSourceName();
+        if ("local".equals(currentSource)) {
+            Path configDir = net.fabricmc.loader.api.FabricLoader.getInstance().getConfigDir();
+            Path configFile = configDir.resolve("toriifind.json");
+            return loadZerothDataFromFile(configFile);
+        }
+        // 其它数据源逻辑不变
+        Path localFile = com.fletime.toriifind.service.LocalDataService.getLocalDataFile(currentSource);
+        if (java.nio.file.Files.exists(localFile)) {
             try {
                 return loadZerothDataFromFile(localFile);
             } catch (Exception e) {
                 System.err.println("[ToriiFind] 读取本地零洲数据失败，尝试从传统配置文件读取: " + e.getMessage());
             }
         }
-        
-        // 回退到传统配置文件
-        Path configDir = FabricLoader.getInstance().getConfigDir();
+        Path configDir = net.fabricmc.loader.api.FabricLoader.getInstance().getConfigDir();
         Path configFile = configDir.resolve("toriifind.json");
         return loadZerothDataFromFile(configFile);
     }
@@ -969,18 +974,23 @@ public class ToriiFindCommand {
      * @throws IOException 读取异常
      */
     private static List<Houtu> loadHoutuData() throws IOException {
-        // 首先尝试从本地文件读取
-        Path localFile = com.fletime.toriifind.service.LocalDataService.getLocalDataFile("fletime");
-        if (Files.exists(localFile)) {
+        // 判断当前数据源是否为 local
+        String currentSource = ToriiFind.getCurrentSourceName();
+        if ("local".equals(currentSource)) {
+            Path configDir = net.fabricmc.loader.api.FabricLoader.getInstance().getConfigDir();
+            Path configFile = configDir.resolve("toriifind.json");
+            return loadHoutuDataFromFile(configFile);
+        }
+        // 其它数据源逻辑不变
+        Path localFile = com.fletime.toriifind.service.LocalDataService.getLocalDataFile(currentSource);
+        if (java.nio.file.Files.exists(localFile)) {
             try {
                 return loadHoutuDataFromFile(localFile);
             } catch (Exception e) {
                 System.err.println("[ToriiFind] 读取本地后土数据失败，尝试从传统配置文件读取: " + e.getMessage());
             }
         }
-        
-        // 回退到传统配置文件
-        Path configDir = FabricLoader.getInstance().getConfigDir();
+        Path configDir = net.fabricmc.loader.api.FabricLoader.getInstance().getConfigDir();
         Path configFile = configDir.resolve("toriifind.json");
         return loadHoutuDataFromFile(configFile);
     }
