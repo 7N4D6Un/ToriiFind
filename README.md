@@ -29,7 +29,7 @@
   列出所有可用的数据源
 
 - `/toriifind source switch <name>`  
-  切换当前数据源（支持自动补全）
+  切换当前数据源
 
 - `/toriifind source current`  
   显示当前使用的数据源
