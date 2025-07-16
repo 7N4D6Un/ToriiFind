@@ -99,17 +99,10 @@ jobs:
             - **Fabric API**: ${{ steps.versions.outputs.fabric }}+
             - **Java**: 21+
             
-            ### 🔧 使用方法
-            - 按下 `Ctrl+F` (或自定义按键) 打开鸟居查找界面
-            - 输入地标名称进行搜索
-            - 支持中文、英文和拼音搜索
-            
             ---
             
             [![Fabric](https://img.shields.io/badge/Fabric-${{ steps.versions.outputs.minecraft }}-blue)](https://fabricmc.net/)
             [![Java](https://img.shields.io/badge/Java-21-orange)](https://www.oracle.com/java/)
             [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
-            
-            *构建时间: $(date '+%Y-%m-%d %H:%M:%S UTC')*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
