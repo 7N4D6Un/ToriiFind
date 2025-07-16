@@ -178,6 +178,16 @@ public class ToriiFindCommand {
                         .executes(context -> listSources(context)))
                     .then(literal("switch")
                         .then(argument("name", StringArgumentType.string())
+                            .suggests((context, builder) -> {
+                                // 自动补全所有可用数据源
+                                for (String name : ToriiFind.getAllSources().keySet()) {
+                                    SourceConfig.DataSource ds = ToriiFind.getAllSources().get(name);
+                                    if (ds.isEnabled()) {
+                                        builder.suggest(name);
+                                    }
+                                }
+                                return builder.buildFuture();
+                            })
                             .executes(context -> switchSource(context, StringArgumentType.getString(context, "name")))))
                     .then(literal("current")
                         .executes(context -> showCurrentSource(context)))
