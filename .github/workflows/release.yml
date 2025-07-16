@@ -103,6 +103,5 @@ jobs:
             
             [![Fabric](https://img.shields.io/badge/Fabric-${{ steps.versions.outputs.minecraft }}-blue)](https://fabricmc.net/)
             [![Java](https://img.shields.io/badge/Java-21-orange)](https://www.oracle.com/java/)
-            [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
