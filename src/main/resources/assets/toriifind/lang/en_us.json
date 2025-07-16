@@ -1,28 +1,28 @@
 {
-  "modmenu.summaryTranslation.toriifind": "A simple Fabric Mod for RIA ZTH server to quickly query torii information",
-  "modmenu.descriptionTranslation.toriifind": "A simple Fabric Mod for RIA ZTH server to quickly query torii information",
-  
+  "modmenu.summaryTranslation.toriifind": "A simple Fabric Mod for quickly querying torii information on RIA servers",
+  "modmenu.descriptionTranslation.toriifind": "A simple Fabric Mod for quickly querying torii information on RIA servers",
+
   "toriifind.help.title": "§6§lToriiFind Command List",
   "toriifind.help.command.help": "§7/toriifind help §8| §fShow command information",
-  "toriifind.help.command.zeroth_smart": "§7/toriifind zeroth <number or keyword> §8| §fSmart search Zeroth torii (number or keyword)",
-  "toriifind.help.command.houtu_smart": "§7/toriifind houtu <number or keyword> §8| §fSmart search Houtu landmarks (number or keyword)",
+  "toriifind.help.command.zeroth_smart": "§7/toriifind zeroth <number or keyword> §8| §fSmart search Zeroth torii (supports number and name)",
+  "toriifind.help.command.houtu_smart": "§7/toriifind houtu <number or keyword> §8| §fSmart search Houtu landmarks (supports number and name)",
   "toriifind.help.command.source.list": "§7/toriifind source list §8| §fList all available data sources",
-  "toriifind.help.command.source.switch": "§7/toriifind source switch <name> §8| §fSwitch to specified data source",
-  "toriifind.help.command.source.current": "§7/toriifind source current §8| §fShow current data source",
-  "toriifind.help.command.source.check": "§7/toriifind source check §8| §fCheck all data source updates and status",
-  "toriifind.help.command.source.reload": "§7/toriifind source reload §8| §fReload configuration file",
+  "toriifind.help.command.source.switch": "§7/toriifind source switch <name> §8| §fSwitch to the specified data source",
+  "toriifind.help.command.source.current": "§7/toriifind source current §8| §fShow the current data source",
+  "toriifind.help.command.source.check": "§7/toriifind source check §8| §fCheck all data sources for updates and status",
+  "toriifind.help.command.source.reload": "§7/toriifind source reload §8| §fReload the configuration file",
   "toriifind.help.command.ciallo": "§7/toriifind ciallo §8| §fCiallo～(∠・ω< )⌒☆",
-  
+
   "toriifind.result.title": "§6§lSearch Results §7(Total: §7%d §7)",
   "toriifind.result.empty.torii": "§cNo related torii information found",
   "toriifind.result.empty.houtu": "§cNo related landmark information found",
   "toriifind.result.header.torii": "§7ID §8| §7Grade §8| §7Torii Name",
   "toriifind.result.header.houtu": "§7ID §8| §7Grade §8| §7Landmark Name",
   "toriifind.result.wiki_link": "§9[WIKI]",
-  "toriifind.result.wiki_hover": "§7Click to view Wiki page\n§f%s",
-  
+  "toriifind.result.wiki_hover": "§7Click to view the Wiki page\n§f%s",
+
   "toriifind.result.format.entry": "§f%s §8| §f%s §8| §f%s",
-  
+
   "toriifind.error.config": "§cError reading configuration file: %s",
   "toriifind.divider": "§8§m----------------------------------------",
   "toriifind.source.list.title": "§6Available data sources:",
@@ -36,7 +36,7 @@
   "toriifind.source.info.version": " §7({0})",
   "toriifind.source.mirror.count": "  §7Mirror URLs: {0} available",
   "toriifind.source.switch.success": "§aSuccessfully switched to data source: %s",
-  "toriifind.source.switch.fail": "§cSwitch failed: data source '%s' does not exist or is disabled",
+  "toriifind.source.switch.fail": "§cSwitch failed: data source '%s' does not exist or is not enabled",
   "toriifind.source.current": "§6Current data source: §a%s §f- %s §7(%s)",
   "toriifind.source.current.api": "§7API URL: %s",
   "toriifind.source.current.json": "§7JSON URL: %s",
@@ -54,7 +54,7 @@
   "toriifind.source.check.failed": "§c%s check failed: %s",
   "toriifind.config.reload.start": "§6Reloading configuration file...",
   "toriifind.config.reload.success": "§a✓ Configuration file successfully reloaded",
-  "toriifind.config.reload.fail": "§c✗ Configuration file reload failed, please check file format",
+  "toriifind.config.reload.fail": "§c✗ Configuration file reload failed, please check the configuration file format",
   "toriifind.source.current.simple": "§6Current data source: §a%s §f(%s)",
   "toriifind.query.working": "§6Querying...",
   "toriifind.result.not_found": "§cNo matching results found",

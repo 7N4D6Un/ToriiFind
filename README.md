@@ -9,7 +9,7 @@
 
 - **智能查询**：支持按编号、名称、拼音关键字一键查询零洲鸟居和后土境地的信息。
 - **多数据源支持**：可自由切换本地/云端多种数据源，数据源会自动更新鸟居信息数据。
-- **多语言支持**：内置简体中文、繁体中文、英文语言包。
+- **多语言支持**：内置简体中文、繁体中文、英文语言文件。
 - **拼音模糊搜索**：支持中文名称的拼音模糊匹配。
 
 ---
@@ -48,16 +48,16 @@
 ## 数据源说明
 
 - **local**  
-  只使用本地 `toriifind.json` 文件作为数据源。
+  只使用本地 `toriifind.json` 文件作为数据源，随 Mod 本体一块更新。
 
 - **fletime**  
-  由 FleTime 维护的云端 JSON 数据源，存放在 [RIA Wiki](https://wiki.ria.red/wiki/%E7%94%A8%E6%88%B7:FleTime/toriifind.json?action=raw)，为默认数据源。
+  由 FleTime 维护的云端 JSON 数据源，存放在 [RIA Wiki](https://wiki.ria.red/wiki/%E7%94%A8%E6%88%B7:FleTime/toriifind.json?action=raw)，新鸟居共鸣后手动更新，为默认数据源。
 
 - **lynn-json**  
-  由 Venti_Lynn 维护的云端 JSON 数据源。
+  由 Venti_Lynn 维护的云端 JSON 数据源，每周进行一次更新。
 
 - **lynn-api**  
-  由 Venti_Lynn 维护的在线 API 数据源（https://github.com/RainC7/RIA_Data）。
+  由 Venti_Lynn 维护的在线 API 数据源 [Github](https://github.com/RainC7/RIA_Data)，每天进行一次更新。
 
 ---
 
