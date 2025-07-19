@@ -4,12 +4,8 @@
 # against bad commits.
 
 name: Build & Test
-on: 
+on:
   workflow_dispatch:
-  push:
-    branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
 
 jobs:
   build:
