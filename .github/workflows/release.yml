@@ -97,7 +97,6 @@ jobs:
             - **Minecraft**: ${{ steps.versions.outputs.minecraft }}
             - **Fabric Loader**: ${{ steps.versions.outputs.loader }}+
             - **Fabric API**: ${{ steps.versions.outputs.fabric }}+
-            - **Java**: 21+
             
             ---
             
