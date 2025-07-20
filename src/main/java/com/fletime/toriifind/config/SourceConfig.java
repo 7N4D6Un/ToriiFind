@@ -136,8 +136,11 @@ public class SourceConfig {
             LoaderOptions loaderOptions = new LoaderOptions();
             Constructor constructor = new Constructor(SourceConfig.class, loaderOptions);
             Yaml yaml = new Yaml(constructor);
-            try (FileInputStream inputStream = new FileInputStream(configFile.toFile())) {
-                SourceConfig config = yaml.load(inputStream);
+            // 使用 UTF-8 编码读取文件
+            try (java.io.InputStreamReader reader = new java.io.InputStreamReader(
+                    new FileInputStream(configFile.toFile()), 
+                    java.nio.charset.StandardCharsets.UTF_8)) {
+                SourceConfig config = yaml.load(reader);
                 if (config == null) {
                     // 文件存在但为空，创建备份后重新创建
                     backupConfigFile();
@@ -184,8 +187,11 @@ public class SourceConfig {
             LoaderOptions loaderOptions = new LoaderOptions();
             Constructor constructor = new Constructor(SourceConfig.class, loaderOptions);
             Yaml yaml = new Yaml(constructor);
-            try (FileInputStream inputStream = new FileInputStream(configFile.toFile())) {
-                SourceConfig config = yaml.load(inputStream);
+            // 使用 UTF-8 编码读取文件
+            try (java.io.InputStreamReader reader = new java.io.InputStreamReader(
+                    new FileInputStream(configFile.toFile()), 
+                    java.nio.charset.StandardCharsets.UTF_8)) {
+                SourceConfig config = yaml.load(reader);
                 return config != null && config.sources != null && !config.sources.isEmpty();
             }
         } catch (Exception e) {
@@ -328,7 +334,10 @@ public class SourceConfig {
             
             Yaml yaml = new Yaml(representer, options);
             
-            try (FileWriter writer = new FileWriter(configFile.toFile())) {
+            // 使用 UTF-8 编码保存文件
+            try (java.io.OutputStreamWriter writer = new java.io.OutputStreamWriter(
+                    new java.io.FileOutputStream(configFile.toFile()), 
+                    java.nio.charset.StandardCharsets.UTF_8)) {
                 yaml.dump(this, writer);
             }
             
