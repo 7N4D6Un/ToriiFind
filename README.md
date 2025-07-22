@@ -1,6 +1,6 @@
 # ToriiFind
 
-这是一个为 `Minecraft` 服务器 `Ria Zth` 设计的简单 Fabric Mod，
+这是一个为 `Minecraft` 服务器 `Ria Zth` 制作的简单 Fabric Mod，
 可以让玩家通过简单的指令，**快速查询服务器内零洲的鸟居信息和后土的境地信息**，并支持多数据源自动更新数据、拼音模糊搜索等功能。
 
 ---
