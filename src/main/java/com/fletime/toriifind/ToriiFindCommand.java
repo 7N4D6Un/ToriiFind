@@ -33,6 +33,7 @@ import com.fletime.toriifind.service.MirrorStatusService;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -523,27 +524,33 @@ public class ToriiFindCommand {
                     ToriiFind.translate("toriifind.result.format.entry").getString(),
                     landmark.getId(), landmark.getGrade(), landmark.getName()
                 );
-                
+            
                 // 添加坐标信息
                 if (landmark.getCoordinates() != null && !landmark.getCoordinates().isUnknown()) {
-                    formattedText += " §7" + landmark.getCoordinates().toString();
+                    formattedText += " §7" + landmark.getCoordinates();
                 }
-                
+            
                 // 添加状态信息
                 if (!"Normal".equals(landmark.getStatus())) {
                     formattedText += " §c[" + landmark.getStatus() + "]";
                 }
-                
+            
                 MutableText baseText = Text.literal(formattedText + " ");
                 String wikiUrl = "https://wiki.ria.red/wiki/" + landmark.getName();
                 Style linkStyle = Style.EMPTY
-                    .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, wikiUrl))
-                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
-                                                  ToriiFind.translate("toriifind.result.wiki_hover", wikiUrl)))
-                    .withFormatting(Formatting.UNDERLINE);
-                MutableText linkText = ((MutableText)ToriiFind.translate("toriifind.result.wiki_link")).setStyle(linkStyle);
+                    .withClickEvent(new ClickEvent.OpenUrl(URI.create(wikiUrl)))
+                    .withHoverEvent(new HoverEvent.ShowText(
+                        ToriiFind.translate("toriifind.result.wiki_hover", wikiUrl)
+                    ))
+                    .withColor(Formatting.AQUA)
+                    .withUnderline(true);
+            
+                MutableText linkText = Text.literal(
+                    ToriiFind.translate("toriifind.result.wiki_link").getString()
+                ).setStyle(linkStyle);
+            
                 context.getSource().sendFeedback(baseText.append(linkText));
-            }
+            }            
             context.getSource().sendFeedback(ToriiFind.translate("toriifind.divider"));
         }
     }
@@ -881,14 +888,19 @@ public class ToriiFindCommand {
                 String wikiUrl = "https://wiki.ria.red/wiki/" + torii.name;
 
                 Style linkStyle = Style.EMPTY
-                    .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, wikiUrl))
-                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
-                        ToriiFind.translate("toriifind.result.wiki_hover", wikiUrl)))
-                    .withFormatting(Formatting.UNDERLINE);
-
-                MutableText linkText = ((MutableText) ToriiFind.translate("toriifind.result.wiki_link")).setStyle(linkStyle);
+                    .withClickEvent(new ClickEvent.OpenUrl(URI.create(wikiUrl)))
+                    .withHoverEvent(new HoverEvent.ShowText(
+                        ToriiFind.translate("toriifind.result.wiki_hover", wikiUrl)
+                    ))
+                    .withColor(Formatting.AQUA)
+                    .withUnderline(true);
+            
+                MutableText linkText = Text.literal(
+                    ToriiFind.translate("toriifind.result.wiki_link").getString()
+                ).setStyle(linkStyle);
                 context.getSource().sendFeedback(baseText.append(linkText));
             }
+            
             context.getSource().sendFeedback(ToriiFind.translate("toriifind.divider"));
         }
     }
@@ -917,16 +929,21 @@ public class ToriiFindCommand {
                 );
                 MutableText baseText = Text.literal(formattedText + " ");
                 String wikiUrl = "https://wiki.ria.red/wiki/" + houtu.name;
-
+            
                 Style linkStyle = Style.EMPTY
-                    .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, wikiUrl))
-                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
-                        ToriiFind.translate("toriifind.result.wiki_hover", wikiUrl)))
-                    .withFormatting(Formatting.UNDERLINE);
-
-                MutableText linkText = ((MutableText) ToriiFind.translate("toriifind.result.wiki_link")).setStyle(linkStyle);
+                    .withClickEvent(new ClickEvent.OpenUrl(URI.create(wikiUrl)))
+                    .withHoverEvent(new HoverEvent.ShowText(
+                        ToriiFind.translate("toriifind.result.wiki_hover", wikiUrl)
+                    ))
+                    .withColor(Formatting.AQUA)
+                    .withUnderline(true);
+            
+                MutableText linkText = Text.literal(
+                    ToriiFind.translate("toriifind.result.wiki_link").getString()
+                ).setStyle(linkStyle);
+            
                 context.getSource().sendFeedback(baseText.append(linkText));
-            }
+            }            
             context.getSource().sendFeedback(ToriiFind.translate("toriifind.divider"));
         }
     }

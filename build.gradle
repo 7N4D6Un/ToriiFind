@@ -35,7 +35,7 @@ dependencies {
 	include(implementation('com.belerweb:pinyin4j:2.5.1'))
 	
 	// YAML解析库
-	include(implementation('org.yaml:snakeyaml:2.0'))
+	include(implementation('org.yaml:snakeyaml:2.2'))
 }
 
 processResources {
@@ -47,7 +47,7 @@ processResources {
 }
 
 tasks.withType(JavaCompile).configureEach {
-	it.options.release = 17
+	it.options.release = 21
 }
 
 java {
@@ -56,8 +56,8 @@ java {
 	// If you remove this line, sources will not be generated.
 	withSourcesJar()
 
-	sourceCompatibility = JavaVersion.VERSION_17
-	targetCompatibility = JavaVersion.VERSION_17
+	sourceCompatibility = JavaVersion.VERSION_21
+	targetCompatibility = JavaVersion.VERSION_21
 }
 
 jar {
