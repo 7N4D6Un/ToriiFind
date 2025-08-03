@@ -536,12 +536,14 @@ public class ToriiFindCommand {
                 
                 MutableText baseText = Text.literal(formattedText + " ");
                 String wikiUrl = "https://wiki.ria.red/wiki/" + landmark.getName();
-                Style linkStyle = Style.EMPTY
-                    .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, wikiUrl))
-                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
-                                                  ToriiFind.translate("toriifind.result.wiki_hover", wikiUrl)))
-                    .withFormatting(Formatting.UNDERLINE);
-                MutableText linkText = ((MutableText)ToriiFind.translate("toriifind.result.wiki_link")).setStyle(linkStyle);
+                MutableText linkText = Text.literal("WIKI")
+                    .setStyle(Style.EMPTY
+                        .withColor(Formatting.BLUE)
+                        .withUnderline(true)
+                        .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, wikiUrl))
+                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
+                            ToriiFind.translate("toriifind.result.wiki_hover", wikiUrl)))
+                    );
                 context.getSource().sendFeedback(baseText.append(linkText));
             }
             context.getSource().sendFeedback(ToriiFind.translate("toriifind.divider"));
@@ -879,14 +881,15 @@ public class ToriiFindCommand {
                 );
                 MutableText baseText = Text.literal(formattedText + " ");
                 String wikiUrl = "https://wiki.ria.red/wiki/" + torii.name;
+                MutableText linkText = Text.literal("WIKI")
+                    .setStyle(Style.EMPTY
+                        .withColor(Formatting.BLUE)
+                        .withUnderline(true)
+                        .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, wikiUrl))
+                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
+                            ToriiFind.translate("toriifind.result.wiki_hover", wikiUrl)))
+                    );
 
-                Style linkStyle = Style.EMPTY
-                    .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, wikiUrl))
-                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
-                        ToriiFind.translate("toriifind.result.wiki_hover", wikiUrl)))
-                    .withFormatting(Formatting.UNDERLINE);
-
-                MutableText linkText = ((MutableText) ToriiFind.translate("toriifind.result.wiki_link")).setStyle(linkStyle);
                 context.getSource().sendFeedback(baseText.append(linkText));
             }
             context.getSource().sendFeedback(ToriiFind.translate("toriifind.divider"));
@@ -917,14 +920,15 @@ public class ToriiFindCommand {
                 );
                 MutableText baseText = Text.literal(formattedText + " ");
                 String wikiUrl = "https://wiki.ria.red/wiki/" + houtu.name;
+                MutableText linkText = Text.literal("WIKI")
+                    .setStyle(Style.EMPTY
+                        .withColor(Formatting.BLUE)
+                        .withUnderline(true)
+                        .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, wikiUrl))
+                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
+                            ToriiFind.translate("toriifind.result.wiki_hover", wikiUrl)))
+                    );
 
-                Style linkStyle = Style.EMPTY
-                    .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, wikiUrl))
-                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
-                        ToriiFind.translate("toriifind.result.wiki_hover", wikiUrl)))
-                    .withFormatting(Formatting.UNDERLINE);
-
-                MutableText linkText = ((MutableText) ToriiFind.translate("toriifind.result.wiki_link")).setStyle(linkStyle);
                 context.getSource().sendFeedback(baseText.append(linkText));
             }
             context.getSource().sendFeedback(ToriiFind.translate("toriifind.divider"));
