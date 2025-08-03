@@ -33,6 +33,7 @@ import com.fletime.toriifind.service.MirrorStatusService;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
