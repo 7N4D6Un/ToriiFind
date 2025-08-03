@@ -35,7 +35,7 @@ dependencies {
 	include(implementation('com.belerweb:pinyin4j:2.5.1'))
 	
 	// YAML解析库
-	include(implementation('org.yaml:snakeyaml:2.0'))
+	include(implementation('org.yaml:snakeyaml:2.2'))
 }
 
 processResources {
