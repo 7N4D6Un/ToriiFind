@@ -1,5 +1,5 @@
 {
-  "version": "20250821",
+  "version": "20250822",
   "houtu": [
     {
       "id": "C-01",
@@ -73,9 +73,9 @@
       "grade": "白级",
       "status": "Normal",
       "coordinates": {
-        "x": "Unknown",
-        "y": "Unknown",
-        "z": "Unknown"
+        "x": 5881.0,
+        "y": 73.0,
+        "z": -3347.0
       }
     },
     {
@@ -3224,6 +3224,28 @@
         "x": 9993.0,
         "y": 64.0,
         "z": 9443.0
+      }
+    },
+    {
+      "id": 274,
+      "name": "皮拉米登",
+      "grade": "白级",
+      "status": "Normal",
+      "coordinates": {
+        "x": 6364.0,
+        "y": 66.0,
+        "z": -8605.0
+      }
+    },
+    {
+      "id": 275,
+      "name": "栖雪谷",
+      "grade": "准级",
+      "status": "Normal",
+      "coordinates": {
+        "x": 11165.0,
+        "y": 73.0,
+        "z": 8156.0
       }
     }
   ]
