@@ -1,5 +1,5 @@
 {
-  "version": "20260307",
+  "version": "20260308",
   "houtu": [
     {
       "id": "C-01",
@@ -43,6 +43,17 @@
         "x": 1496.0,
         "y": 71.0,
         "z": -531.0
+      }
+    },
+    {
+      "id": "C-05",
+      "name": "蔦屋",
+      "grade": "白级",
+      "status": "Normal",
+      "coordinates": {
+        "x": "Unknown",
+        "y": "Unknown",
+        "z": "Unknown"
       }
     },
     {
@@ -3334,6 +3345,17 @@
         "x": 158.0,
         "y": 64.0,
         "z": -15316.0
+      }
+    },
+    {
+      "id": 282,
+      "name": "海华星湖国际机场",
+      "grade": "标级",
+      "status": "Normal",
+      "coordinates": {
+        "x": "Unknown",
+        "y": "Unknown",
+        "z": "Unknown"
       }
     }
   ]
