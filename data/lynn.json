@@ -1,5 +1,5 @@
 {
-  "version": "20260321",
+  "version": "20260322",
   "houtu": [
     {
       "id": "C-01",
@@ -51,9 +51,9 @@
       "grade": "白级",
       "status": "Normal",
       "coordinates": {
-        "x": "Unknown",
-        "y": "Unknown",
-        "z": "Unknown"
+        "x": 649.0,
+        "y": 64.0,
+        "z": 179.0
       }
     },
     {
@@ -255,7 +255,5 @@
       }
     }
   ],
-  "zeroth": {
-    "error": "Request failed: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))"
-  }
+  "zeroth": []
 }
