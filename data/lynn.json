@@ -1,5 +1,5 @@
 {
-  "version": "20260331",
+  "version": "20260401",
   "houtu": [
     {
       "id": "C-01",
@@ -255,5 +255,7 @@
       }
     }
   ],
-  "zeroth": []
+  "zeroth": {
+    "error": "Request failed: HTTPSConnectionPool(host='wiki.ria.red', port=443): Max retries exceeded with url: /wiki/%E6%A8%A1%E6%9D%BF:%E9%9B%B6%E6%B4%B2%E5%85%B1%E9%B8%A3%E5%9C%B0%E6%A0%87 (Caused by ConnectTimeoutError(<HTTPSConnection(host='wiki.ria.red', port=443) at 0x7f20efaefaf0>, 'Connection to wiki.ria.red timed out. (connect timeout=None)'))"
+  }
 }
