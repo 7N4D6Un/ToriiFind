@@ -1,9 +1,9 @@
 name: Merge Lynn Data Sources
 
 on:
-  schedule:
+  # schedule:
     # 每天早上 8:00 UTC 自动运行
-    - cron: '0 8 * * *'
+    # - cron: '0 8 * * *'
   workflow_dispatch:
     # 支持手动触发
 
