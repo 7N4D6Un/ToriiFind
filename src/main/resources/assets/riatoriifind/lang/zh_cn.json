@@ -1,0 +1,38 @@
+{
+  "modmenu.nameTranslation.riatoriifind": "RIA鸟居搜索",
+  "modmenu.descriptionTranslation.riatoriifind": "一个可以快速查询 RIA 服务器内鸟居或境地信息的 Mod。",
+
+  "riatoriifind.command.help.find": "/riatoriifind <编号或关键字> | 搜索鸟居或境地",
+
+  "riatoriifind.divider": "----------------------------------------",
+
+  "riatoriifind.result.title.prefix": "查询结果",
+  "riatoriifind.result.title.suffix.before": " (共 ",
+  "riatoriifind.result.title.suffix.after": " 个)",
+  "riatoriifind.result.empty.find": "未找到任何相关的鸟居或境地信息",
+  "riatoriifind.result.col.id": "编号",
+  "riatoriifind.result.col.grade": "等级",
+  "riatoriifind.result.col.name": "鸟居或境地名称",
+  "riatoriifind.result.wiki_link": "[WIKI]",
+  "riatoriifind.result.wiki_hover": "点击查看Wiki页面\n%s",
+  "riatoriifind.error.load_data": "读取数据时出错: %s",
+
+  "riatoriifind.config.title": "RiaToriiFind 配置",
+  "riatoriifind.config.category.general": "通用",
+  "riatoriifind.config.show_check_popups": "显示连接结果提示",
+  "riatoriifind.config.show_check_popups.tooltip": "关闭后，切换远程数据源后不会弹出连接成功或失败的提示。",
+  "riatoriifind.config.source": "数据源",
+  "riatoriifind.config.source.tooltip": "选择用于查询鸟居信息的数据源\n\n- 本地数据源：使用 Mod 内置的数据，随 Mod 更新而更新，数据比较滞后。\n- RIA Wiki 数据源：由 FleTime 维护的存放于 RIA Wiki 上的数据源，更新比较及时。",
+  "riatoriifind.config.source.local": "本地数据源",
+  "riatoriifind.config.source.ria-wiki": "RIA Wiki 数据源",
+  "riatoriifind.config.refresh_source": "刷新当前数据源",
+  "riatoriifind.config.refresh_source.tooltip": "开启后点击完成并退出，会自动还原此开关并刷新一次当前数据源。",
+
+  "riatoriifind.config.debug_mode": "调试模式",
+  "riatoriifind.config.debug_mode.tooltip": "开启后在日志中输出详细运行信息，用于排查问题，没事没必要打开。",
+
+  "riatoriifind.source.check.success.title": "数据源连接成功",
+  "riatoriifind.source.check.success.message": "成功从远程源获取到数据文件。",
+  "riatoriifind.source.check.fallback.title": "数据源连接失败",
+  "riatoriifind.source.check.fallback.message": "无法连接远程源，已切换为本地数据源。"
+}

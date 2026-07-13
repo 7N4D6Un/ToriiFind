@@ -3,64 +3,29 @@
 # certain platforms or Java versions, and provides a first line of defence
 # against bad commits.
 
-name: Build & Test
-on:
-  workflow_dispatch:
+name: build
+on: [pull_request, push]
 
 jobs:
   build:
     runs-on: ubuntu-24.04
     steps:
-      # 检出仓库代码
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        
-      # 校验 gradle wrapper 的合法性
-      - name: Validate gradle wrapper
-        uses: gradle/actions/wrapper-validation@v4
-        
-      # 设置 JDK 21 环境
-      - name: Setup JDK
-        uses: actions/setup-java@v4
+      - name: checkout repository
+        uses: actions/checkout@v6
+      - name: validate gradle wrapper
+        uses: gradle/actions/wrapper-validation@v6
+      - name: setup jdk
+        uses: actions/setup-java@v5
         with:
-          java-version: '21'
+          java-version: '25'
           distribution: 'microsoft'
-          
-      # 缓存 Gradle 依赖
-      - name: Cache Gradle packages
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-            
-      # 赋予 gradlew 可执行权限（Linux 下必须）
-      - name: Make gradle wrapper executable
+          cache: gradle
+      - name: make gradle wrapper executable
         run: chmod +x ./gradlew
-        
-      # 执行构建
-      - name: Build
-        run: ./gradlew clean build --no-daemon
-        
-      # 运行测试
-      - name: Run tests
-        run: ./gradlew test --no-daemon
-        continue-on-error: true
-        
-      # 获取版本信息
-      - name: Get version info
-        id: version
-        run: |
-          VERSION=$(grep "mod_version=" gradle.properties | cut -d'=' -f2)
-          echo "mod_version=$VERSION" >> $GITHUB_OUTPUT
-          echo "Mod version: $VERSION"
-          
-      # 上传构建产物（供后续步骤或手动下载）
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
+      - name: build
+        run: ./gradlew build
+      - name: capture build artifacts
+        uses: actions/upload-artifact@v7
         with:
-          name: ToriiFind-${{ steps.version.outputs.mod_version }}-build-${{ github.run_number }}
+          name: Artifacts
           path: build/libs/
