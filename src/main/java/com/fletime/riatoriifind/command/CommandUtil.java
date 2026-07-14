@@ -18,10 +18,6 @@ public final class CommandUtil {
 		return c.copy().withStyle(ChatFormatting.GRAY);
 	}
 
-	public static MutableComponent gold(Component c) {
-		return c.copy().withStyle(ChatFormatting.GOLD);
-	}
-
 	public static MutableComponent red(Component c) {
 		return c.copy().withStyle(ChatFormatting.RED);
 	}

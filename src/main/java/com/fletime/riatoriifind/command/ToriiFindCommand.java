@@ -1,6 +1,7 @@
 package com.fletime.riatoriifind.command;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
@@ -21,8 +22,13 @@ public class ToriiFindCommand {
 	private static void registerCommands(CommandDispatcher<FabricClientCommandSource> dispatcher) {
 		dispatcher.register(literal("riatoriifind")
 			.executes(ToriiFindCommand::showHelp)
-			.then(argument("query", StringArgumentType.greedyString())
-				.executes(ctx -> FindCommand.searchFind(ctx, StringArgumentType.getString(ctx, "query").trim()))));
+			.then(argument("query", StringArgumentType.string())
+				.executes(ctx -> FindCommand.searchFind(ctx,
+						StringArgumentType.getString(ctx, "query"), 1))
+				.then(argument("page", IntegerArgumentType.integer(1))
+					.executes(ctx -> FindCommand.searchFind(ctx,
+							StringArgumentType.getString(ctx, "query"),
+							IntegerArgumentType.getInteger(ctx, "page"))))));
 	}
 
 	private static int showHelp(CommandContext<FabricClientCommandSource> ctx) {

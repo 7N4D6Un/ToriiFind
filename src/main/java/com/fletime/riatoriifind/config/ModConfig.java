@@ -39,7 +39,7 @@ public final class ModConfig {
     public static boolean showCheckPopups = true;
     public static boolean debugMode = false;
 
-    /** 一次性刷新开关，保存后自动关闭并刷新当前源 */
+    // 一次性刷新开关，保存后自动关闭并刷新当前源
     public static boolean refreshSource = false;
 
     private ModConfig() {

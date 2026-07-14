@@ -118,36 +118,7 @@ public final class RiaConfigScreen {
     }
 
     private static void performSourceSwitch() {
-        if (ModConfig.SOURCE_RIA_WIKI.equals(ModConfig.currentSource)) {
-            ToriiDataService.reloadCache();
-            SourceCheckService.check(ModConfig.RIA_WIKI_URL, 5, 3000L)
-                    .thenCompose(connected -> {
-                        if (!connected) {
-                            ModConfig.currentSource = ModConfig.SOURCE_LOCAL;
-                            ModConfig.syncBuiltinData();
-                            ToriiDataService.reloadCache();
-                            return CompletableFuture.completedFuture(false);
-                        }
-                        return SourceCheckService.updateFromRemote(ModConfig.RIA_WIKI_URL, ModConfig.getLocalDataFile())
-                                .thenApply(updated -> {
-                                    if (updated) ToriiDataService.reloadCache();
-                                    return true;
-                                });
-                    })
-                    .thenAccept(success -> {
-                        if (!ModConfig.showCheckPopups) return;
-                        Minecraft.getInstance().execute(() ->
-                                showToast(success
-                                        ? Component.translatable("riatoriifind.source.check.success.title")
-                                        : Component.translatable("riatoriifind.source.check.fallback.title"),
-                                        success
-                                                ? Component.translatable("riatoriifind.source.check.success.message")
-                                                : Component.translatable("riatoriifind.source.check.fallback.message")));
-                    });
-        } else {
-            ModConfig.syncBuiltinData();
-            ToriiDataService.reloadCache();
-        }
+        refreshCurrentSource();
     }
 
     private static void showToast(Component title, Component message) {

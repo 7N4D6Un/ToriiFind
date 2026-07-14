@@ -19,39 +19,50 @@ import static com.fletime.riatoriifind.command.CommandUtil.*;
 
 public class FindCommand {
 
-	public static int searchFind(CommandContext<FabricClientCommandSource> ctx, String query) {
-		if (ModConfig.debugMode) RiaToriiFind.LOGGER.info("搜索请求: \"{}\"", query);
+	private static final int PAGE_SIZE = 10;
+
+	public static int searchFind(CommandContext<FabricClientCommandSource> ctx, String query, int page) {
+		if (ModConfig.debugMode) RiaToriiFind.LOGGER.info("搜索请求: \"{}\" 第{}页", query, page);
+
 		try {
-			var results = ToriiDataService.searchAll(query);
-			displayFindResults(ctx, results);
+			var all = ToriiDataService.searchAll(query);
+			displayFindResults(ctx, all, query, page);
 		} catch (Exception e) {
 			ctx.getSource().sendError(red(t("riatoriifind.error.load_data", e.getMessage())));
 		}
 		return 1;
 	}
 
-	private static void displayFindResults(CommandContext<FabricClientCommandSource> ctx, List<FindEntry> results) {
+	private static void displayFindResults(CommandContext<FabricClientCommandSource> ctx, List<FindEntry> all, String query, int page) {
 		var src = ctx.getSource();
-		if (results.isEmpty()) {
+		if (all.isEmpty()) {
 			src.sendFeedback(divider());
 			src.sendFeedback(red(t("riatoriifind.result.empty.find")));
 			src.sendFeedback(divider());
 			return;
 		}
 
+		int totalPages = (all.size() + PAGE_SIZE - 1) / PAGE_SIZE;
+		if (page < 1) page = 1;
+		if (page > totalPages) page = totalPages;
+
+		int from = (page - 1) * PAGE_SIZE;
+		int to = Math.min(from + PAGE_SIZE, all.size());
+		var pageEntries = all.subList(from, to);
+
 		int maxId = 2, maxGrade = 2;
-		for (var e : results) {
+		for (var e : pageEntries) {
 			maxId = Math.max(maxId, displayWidth(e.id()));
 			maxGrade = Math.max(maxGrade, displayWidth(e.grade()));
 		}
 
 		src.sendFeedback(divider());
-		var countStr = String.valueOf(results.size());
-		var prefix = Component.literal(t("riatoriifind.result.title.prefix").getString()).withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD);
-		var before = Component.literal(t("riatoriifind.result.title.suffix.before").getString()).withStyle(ChatFormatting.GRAY);
-		var count = Component.literal(countStr).withStyle(ChatFormatting.WHITE);
-		var after = Component.literal(t("riatoriifind.result.title.suffix.after").getString()).withStyle(ChatFormatting.GRAY);
-		src.sendFeedback(Component.literal("").append(prefix).append(before).append(count).append(after));
+		var countStr = String.valueOf(all.size());
+		src.sendFeedback(Component.literal("").append(
+				Component.literal(t("riatoriifind.result.title.prefix").getString()).withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD))
+				.append(Component.literal(t("riatoriifind.result.title.suffix.before").getString()).withStyle(ChatFormatting.GRAY))
+				.append(Component.literal(countStr).withStyle(ChatFormatting.WHITE))
+				.append(Component.literal(t("riatoriifind.result.title.suffix.after").getString()).withStyle(ChatFormatting.GRAY)));
 		src.sendFeedback(divider());
 
 		var colId = padRight(t("riatoriifind.result.col.id").getString(), maxId);
@@ -65,7 +76,7 @@ public class FindCommand {
 		);
 		src.sendFeedback(divider());
 
-		for (var entry : results) {
+		for (var entry : pageEntries) {
 			var line = Component.literal(padRight(entry.id(), maxId))
 				.append(Component.literal(" | ").withStyle(ChatFormatting.DARK_GRAY))
 				.append(Component.literal(padRight(entry.grade(), maxGrade)))
@@ -81,6 +92,19 @@ public class FindCommand {
 				.withColor(ChatFormatting.BLUE));
 			src.sendFeedback(line.append(Component.literal(" ")).append(link));
 		}
+		src.sendFeedback(divider());
+
+		var footer = Component.literal(t("riatoriifind.result.page", page, totalPages).getString()).withStyle(ChatFormatting.GRAY);
+		if (page < totalPages) {
+			footer.append(Component.literal("  "));
+			String nextCmd = "/riatoriifind " + query + " " + (page + 1);
+			footer.append(Component.literal(t("riatoriifind.result.next_page").getString())
+					.withStyle(Style.EMPTY
+							.withClickEvent(new ClickEvent.SuggestCommand(nextCmd))
+							.withHoverEvent(new HoverEvent.ShowText(gray(t("riatoriifind.result.next_page_hover"))))
+							.withColor(ChatFormatting.GREEN)));
+		}
+		src.sendFeedback(footer);
 		src.sendFeedback(divider());
 	}
 

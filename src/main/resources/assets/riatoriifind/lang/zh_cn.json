@@ -2,7 +2,7 @@
   "modmenu.nameTranslation.riatoriifind": "RIA鸟居搜索",
   "modmenu.descriptionTranslation.riatoriifind": "一个可以快速查询 RIA 服务器内鸟居或境地信息的 Mod。",
 
-  "riatoriifind.command.help.find": "/riatoriifind <编号或关键字> | 搜索鸟居或境地",
+  "riatoriifind.command.help.find": "/riatoriifind <编号或关键字> [页数] | 搜索鸟居或境地",
 
   "riatoriifind.divider": "----------------------------------------",
 
@@ -13,8 +13,17 @@
   "riatoriifind.result.col.id": "编号",
   "riatoriifind.result.col.grade": "等级",
   "riatoriifind.result.col.name": "鸟居或境地名称",
+  "riatoriifind.result.page": "第 %s/%s 页",
+  "riatoriifind.result.next_page": "[下一页]",
+  "riatoriifind.result.next_page_hover": "点击输入下一页指令",
+
   "riatoriifind.result.wiki_link": "[WIKI]",
   "riatoriifind.result.wiki_hover": "点击查看Wiki页面\n%s",
+
+  "riatoriifind.command.go": "已设置导航目标: %s, %s",
+  "riatoriifind.command.go.cancel": "已取消导航",
+  "riatoriifind.command.go.usage": "用法: /riatoriifindgo <x> <z> 或 /riatoriifindgo 取消当前导航",
+
   "riatoriifind.error.load_data": "读取数据时出错: %s",
 
   "riatoriifind.config.title": "RiaToriiFind 配置",
