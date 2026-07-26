@@ -39,6 +39,13 @@ public final class ModConfig {
     public static boolean showCheckPopups = true;
     public static boolean debugMode = false;
 
+    // 搜索结果中是否显示 [导航] 按钮
+    public static boolean showNavButton = true;
+
+    // 导航箭头 HUD 相对屏幕右下角的边距
+    public static int navHudMarginX = 12;
+    public static int navHudMarginY = 12;
+
     // 一次性刷新开关，保存后自动关闭并刷新当前源
     public static boolean refreshSource = false;
 
@@ -50,6 +57,7 @@ public final class ModConfig {
         try {
             Files.createDirectories(CONFIG_DIR);
         } catch (IOException e) {
+            RiaToriiFind.LOGGER.warn("无法创建配置目录 {}: {}", CONFIG_DIR, e.getMessage());
         }
         loadConfigFile();
         if (SOURCE_LOCAL.equals(currentSource)) {
@@ -67,9 +75,13 @@ public final class ModConfig {
                 data.showCheckPopups = showCheckPopups;
                 data.debugMode = debugMode;
                 data.refreshSource = refreshSource;
+                data.showNavButton = showNavButton;
+                data.navHudMarginX = navHudMarginX;
+                data.navHudMarginY = navHudMarginY;
                 GSON.toJson(data, writer);
             }
         } catch (IOException e) {
+            RiaToriiFind.LOGGER.warn("保存配置失败: {}", e.getMessage());
         }
     }
 
@@ -86,6 +98,9 @@ public final class ModConfig {
                 showCheckPopups = data.showCheckPopups;
                 debugMode = data.debugMode;
                 refreshSource = data.refreshSource;
+                showNavButton = data.showNavButton;
+                navHudMarginX = data.navHudMarginX;
+                navHudMarginY = data.navHudMarginY;
             }
         } catch (Exception e) {
             currentSource = "local";
@@ -193,5 +208,8 @@ public final class ModConfig {
         boolean showCheckPopups = true;
         boolean debugMode = false;
         boolean refreshSource = false;
+        boolean showNavButton = true;
+        int navHudMarginX = 12;
+        int navHudMarginY = 12;
     }
 }

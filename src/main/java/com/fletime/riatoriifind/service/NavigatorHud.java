@@ -1,17 +1,22 @@
 package com.fletime.riatoriifind.service;
 
 import com.fletime.riatoriifind.RiaToriiFind;
+import com.fletime.riatoriifind.config.ModConfig;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 
 public final class NavigatorHud {
 
     private static final Identifier ARROW = RiaToriiFind.id("textures/arrow.png");
-    private static final int SIZE = 16, MARGIN = 12;
+    private static final int SIZE = 16;
+
+    // 水平距离小于该值视为到达目的地，自动结束导航
+    private static final double ARRIVE_DISTANCE = 10.0;
 
     private NavigatorHud() {
         throw new UnsupportedOperationException("Static accessor");
@@ -34,6 +39,15 @@ public final class NavigatorHud {
         double dx = target.getX() + 0.5 - player.getX();
         double dz = target.getZ() + 0.5 - player.getZ();
         double dist = Math.sqrt(dx * dx + dz * dz);
+
+        // 足够接近视为到达，自动结束导航
+        if (dist < ARRIVE_DISTANCE) {
+            Navigator.clear();
+            mc.gui.hud.getChat().addClientSystemMessage(
+                    Component.translatable("riatoriifind.command.go.arrived"));
+            return;
+        }
+
         var text = String.format("%.0f m", dist);
 
         int sw = mc.getWindow().getGuiScaledWidth();
@@ -41,8 +55,8 @@ public final class NavigatorHud {
         int tw = mc.font.width(text);
         int ew = Math.max(SIZE, tw);
 
-        int cx = sw - MARGIN - ew / 2;
-        int ty = sh - MARGIN - mc.font.lineHeight;
+        int cx = sw - ModConfig.navHudMarginX - ew / 2;
+        int ty = sh - ModConfig.navHudMarginY - mc.font.lineHeight;
         int cy = ty - 6 - SIZE / 2;
 
         // 半透明背景（箭头 + 文字）

@@ -3,11 +3,13 @@ package com.fletime.riatoriifind;
 import com.fletime.riatoriifind.command.GoCommand;
 import com.fletime.riatoriifind.command.ToriiFindCommand;
 import com.fletime.riatoriifind.config.ModConfig;
+import com.fletime.riatoriifind.service.Navigator;
 import com.fletime.riatoriifind.service.NavigatorHud;
 import com.fletime.riatoriifind.service.SourceCheckService;
 import com.fletime.riatoriifind.service.ToriiDataService;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 
 import net.minecraft.resources.Identifier;
 
@@ -28,6 +30,8 @@ public final class RiaToriiFind implements ClientModInitializer {
         ToriiFindCommand.register();
         GoCommand.register();
         NavigatorHud.register();
+        // 退出服务器或离开世界时清除导航目标
+        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> Navigator.clear());
         checkOnlineSource();
     }
 

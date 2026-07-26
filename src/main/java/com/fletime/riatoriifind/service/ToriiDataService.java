@@ -1,6 +1,7 @@
 package com.fletime.riatoriifind.service;
 
 import com.fletime.riatoriifind.RiaToriiFind;
+import com.fletime.riatoriifind.command.FindCommand;
 import com.fletime.riatoriifind.config.ModConfig;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -32,6 +33,7 @@ public final class ToriiDataService {
 
 	public static void reloadCache() {
 		DATA_CACHE = null;
+		FindCommand.clearSession();
 		if (ModConfig.debugMode) RiaToriiFind.LOGGER.info("数据缓存已清空");
 	}
 
@@ -43,22 +45,23 @@ public final class ToriiDataService {
 				parseLocalJson();
 				if (ModConfig.debugMode && DATA_CACHE != null) RiaToriiFind.LOGGER.info("数据预加载完成");
 			} catch (IOException e) {
+				RiaToriiFind.LOGGER.warn("数据预加载失败: {}", e.getMessage());
 			}
 		});
 	}
 
-	public record ToriiEntry(String id, String name, String grade) {}
-	public record HoutuEntry(String id, String name, String grade) {}
-	public record FindEntry(String id, String name, String grade, String type) {}
+	public record ToriiEntry(String id, String name, String grade, String coord) {}
+	public record HoutuEntry(String id, String name, String grade, String coord) {}
+	public record FindEntry(String id, String name, String grade, String type, String coord) {}
 
 	public static List<ToriiEntry> loadZeroth() throws IOException {
 		return loadArray("zeroth", obj -> new ToriiEntry(
-			getString(obj, "id"), getString(obj, "name"), getString(obj, "grade")));
+			getString(obj, "id"), getString(obj, "name"), getString(obj, "grade"), getString(obj, "coord")));
 	}
 
 	public static List<HoutuEntry> loadHoutu() throws IOException {
 		return loadArray("houtu", obj -> new HoutuEntry(
-			getString(obj, "id"), getString(obj, "name"), getString(obj, "grade")));
+			getString(obj, "id"), getString(obj, "name"), getString(obj, "grade"), getString(obj, "coord")));
 	}
 
 	private static <T> List<T> loadArray(String arrayKey, Function<JsonObject, T> mapper) throws IOException {
@@ -91,10 +94,10 @@ public final class ToriiDataService {
 	public static List<FindEntry> searchAll(String query) throws IOException {
 		var results = new ArrayList<FindEntry>();
 		for (var e : searchZerothSmart(query)) {
-			results.add(new FindEntry(e.id(), e.name(), e.grade(), "zeroth"));
+			results.add(new FindEntry(e.id(), e.name(), e.grade(), "zeroth", e.coord()));
 		}
 		for (var e : searchHoutuSmart(query)) {
-			results.add(new FindEntry(e.id(), e.name(), e.grade(), "houtu"));
+			results.add(new FindEntry(e.id(), e.name(), e.grade(), "houtu", e.coord()));
 		}
 		if (ModConfig.debugMode) RiaToriiFind.LOGGER.info("搜索 \"{}\" 返回 {} 条结果", query, results.size());
 		return results;
@@ -134,7 +137,6 @@ public final class ToriiDataService {
 		return List.copyOf(seen.values());
 	}
 
-	@SuppressWarnings("unchecked")
 	private static <T> String keyOf(T entry) {
 		return switch (entry) {
 			case ToriiEntry e -> e.id();

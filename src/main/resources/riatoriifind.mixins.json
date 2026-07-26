@@ -1,0 +1,12 @@
+{
+	"required": true,
+	"minVersion": "0.8",
+	"package": "com.fletime.riatoriifind.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"client": [
+		"ChatScreenMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}
