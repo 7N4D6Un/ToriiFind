@@ -1,31 +1,38 @@
 {
 	"schemaVersion": 1,
-	"id": "toriifind",
+	"id": "riatoriifind",
 	"version": "${version}",
-	"name": "ToriiFind",
-	"description": "一个可以快速查询RIA服务器内鸟居信息的Mod",
+	"name": "RiaToriiFind",
+	"description": "A mod that allows you to quickly query information about torii or precincts within the RIA server.",
 	"authors": [
 		"FleTime"
 	],
 	"contributors": [
-		"Venti_Lynn"
+		"Venti_Lynn",
+		"sXKYYYY"
 	],
 	"contact": {
-		"issues": "https://github.com/7N4D6Un/ToriiFind/issues",
-		"sources": "https://github.com/7N4D6Un/ToriiFind"
+		"sources": "https://github.com/7N4D6Un/RiaToriiFind"
 	},
 	"license": "CC0-1.0",
-	"icon": "assets/toriifind/icon.png",
+	"icon": "assets/riatoriifind/icon.png",
 	"environment": "client",
+	"mixins": [
+		"riatoriifind.mixins.json"
+	],
 	"entrypoints": {
 		"client": [
-			"com.fletime.toriifind.ToriiFind"
+			"com.fletime.riatoriifind.RiaToriiFind"
+		],
+		"modmenu": [
+			"com.fletime.riatoriifind.config.ModMenuIntegration"
 		]
 	},
 	"depends": {
-		"fabricloader": ">=0.14.3",
-		"minecraft": ">=1.21.5 <=1.21.9",
-		"java": ">=21",
-		"fabric-api": "*"
+		"fabricloader": ">=0.19.3",
+		"minecraft": ">=26.1",
+		"java": ">=25",
+		"fabric-api": "*",
+		"cloth-config": "*"
 	}
 }

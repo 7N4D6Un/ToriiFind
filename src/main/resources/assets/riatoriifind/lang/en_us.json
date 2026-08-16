@@ -1,0 +1,46 @@
+{
+  "modmenu.nameTranslation.riatoriifind": "RIA Torii Search",
+  "modmenu.descriptionTranslation.riatoriifind": "A mod that allows you to quickly query information about torii or precincts within the RIA server.",
+
+  "riatoriifind.command.help.find": "/riatoriifind <ID or keyword> | Search for torii or precincts",
+
+  "riatoriifind.divider": "----------------------------------------",
+
+  "riatoriifind.result.title.prefix": "Search Results",
+  "riatoriifind.result.title.suffix.before": " (Total ",
+  "riatoriifind.result.title.suffix.after": ")",
+  "riatoriifind.result.empty.find": "No related torii or precinct information found",
+  "riatoriifind.result.col.id": "ID",
+  "riatoriifind.result.col.grade": "Grade",
+  "riatoriifind.result.col.name": "Torii/Precinct Name",
+  "riatoriifind.result.page": "Page %s/%s",
+  "riatoriifind.result.prev_page": "[Previous Page]",
+  "riatoriifind.result.prev_page_hover": "Click to view previous page",
+  "riatoriifind.result.next_page": "[Next Page]",
+  "riatoriifind.result.next_page_hover": "Click to view next page",
+
+  "riatoriifind.result.wiki_link": "[WIKI]",
+  "riatoriifind.result.wiki_hover": "Click to view Wiki page\n%s",
+
+  "riatoriifind.error.load_data": "Error loading data: %s",
+  "riatoriifind.error.no_session": "No search results to page through; please perform a search first",
+
+  "riatoriifind.config.title": "RiaToriiFind Configuration",
+  "riatoriifind.config.category.general": "General",
+  "riatoriifind.config.show_check_popups": "Show connection result popups",
+  "riatoriifind.config.show_check_popups.tooltip": "When disabled, popups for successful or failed connections will not appear after switching remote data sources.",
+  "riatoriifind.config.source": "Data Source",
+  "riatoriifind.config.source.tooltip": "Select the data source for querying torii information.\n\n- Local data source: Uses the mod's built-in data, updated with mod updates, data may be lagging.\n- RIA Wiki data source: Maintained by FleTime and hosted on the RIA Wiki, updated more promptly.",
+  "riatoriifind.config.source.local": "Local data source",
+  "riatoriifind.config.source.ria-wiki": "RIA Wiki data source",
+  "riatoriifind.config.refresh_source": "Refresh current data source",
+  "riatoriifind.config.refresh_source.tooltip": "When enabled, after clicking Done and exiting, this switch will automatically be reset and the current data source will be refreshed once.",
+
+  "riatoriifind.config.debug_mode": "Debug mode",
+  "riatoriifind.config.debug_mode.tooltip": "When enabled, outputs detailed runtime information to the log for troubleshooting; no need to turn it on otherwise.",
+
+  "riatoriifind.source.check.success.title": "Data source connection successful",
+  "riatoriifind.source.check.success.message": "Successfully retrieved data file from remote source.",
+  "riatoriifind.source.check.fallback.title": "Data source connection failed",
+  "riatoriifind.source.check.fallback.message": "Unable to connect to remote source, switched to local data source."
+}
