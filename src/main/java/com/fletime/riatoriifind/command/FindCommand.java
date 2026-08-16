@@ -2,6 +2,7 @@ package com.fletime.riatoriifind.command;
 
 import com.fletime.riatoriifind.RiaToriiFind;
 import com.fletime.riatoriifind.chat.ModClickEvents;
+import com.fletime.riatoriifind.config.ModConfig;
 import com.fletime.riatoriifind.service.ToriiDataService;
 import com.fletime.riatoriifind.service.ToriiDataService.FindEntry;
 import com.mojang.brigadier.context.CommandContext;
