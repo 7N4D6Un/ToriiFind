@@ -51,35 +51,6 @@ public final class RiaConfigScreen {
 
         general.addEntry(entryBuilder
                 .startBooleanToggle(
-                        Component.translatable("riatoriifind.config.show_nav_button"),
-                        ModConfig.showNavButton)
-                .setDefaultValue(true)
-                .setTooltip(Component.translatable("riatoriifind.config.show_nav_button.tooltip"))
-                .setSaveConsumer(v -> ModConfig.showNavButton = v)
-                .build());
-
-        general.addEntry(entryBuilder
-                .startIntField(
-                        Component.translatable("riatoriifind.config.nav_hud_margin_x"),
-                        ModConfig.navHudMarginX)
-                .setDefaultValue(12)
-                .setMin(0)
-                .setTooltip(Component.translatable("riatoriifind.config.nav_hud_margin_x.tooltip"))
-                .setSaveConsumer(v -> ModConfig.navHudMarginX = v)
-                .build());
-
-        general.addEntry(entryBuilder
-                .startIntField(
-                        Component.translatable("riatoriifind.config.nav_hud_margin_y"),
-                        ModConfig.navHudMarginY)
-                .setDefaultValue(12)
-                .setMin(0)
-                .setTooltip(Component.translatable("riatoriifind.config.nav_hud_margin_y.tooltip"))
-                .setSaveConsumer(v -> ModConfig.navHudMarginY = v)
-                .build());
-
-        general.addEntry(entryBuilder
-                .startBooleanToggle(
                         Component.translatable("riatoriifind.config.refresh_source"),
                         ModConfig.refreshSource)
                 .setDefaultValue(false)

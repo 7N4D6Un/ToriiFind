@@ -21,13 +21,6 @@
 
   "riatoriifind.result.wiki_link": "[WIKI]",
   "riatoriifind.result.wiki_hover": "点击查看Wiki页面\n%s",
-  "riatoriifind.result.nav": "[导航]",
-  "riatoriifind.result.nav_hover": "点击导航至 %s, %s",
-
-  "riatoriifind.command.go": "已设置导航目标: %s, %s",
-  "riatoriifind.command.go.arrived": "已到达目的地附近，导航结束",
-  "riatoriifind.command.go.cancel": "已取消导航",
-  "riatoriifind.command.go.usage": "用法: /riatoriifindgo <x> <z> 或 /riatoriifindgo 取消当前导航",
 
   "riatoriifind.error.load_data": "读取数据时出错: %s",
   "riatoriifind.error.no_session": "没有可翻页的搜索结果，请先执行一次搜索",
@@ -36,12 +29,6 @@
   "riatoriifind.config.category.general": "通用",
   "riatoriifind.config.show_check_popups": "显示连接结果提示",
   "riatoriifind.config.show_check_popups.tooltip": "关闭后，切换远程数据源后不会弹出连接成功或失败的提示。",
-  "riatoriifind.config.show_nav_button": "在搜索结果中显示导航按钮",
-  "riatoriifind.config.show_nav_button.tooltip": "关闭后，搜索结果的每一行不再显示 [导航] 按钮。",
-  "riatoriifind.config.nav_hud_margin_x": "导航箭头右边距",
-  "riatoriifind.config.nav_hud_margin_x.tooltip": "导航箭头 HUD 距离屏幕右边缘的像素数，默认 12。",
-  "riatoriifind.config.nav_hud_margin_y": "导航箭头下边距",
-  "riatoriifind.config.nav_hud_margin_y.tooltip": "导航箭头 HUD 距离屏幕下边缘的像素数，默认 12。",
   "riatoriifind.config.source": "数据源",
   "riatoriifind.config.source.tooltip": "选择用于查询鸟居信息的数据源\n\n- 本地数据源：使用 Mod 内置的数据，随 Mod 更新而更新，数据比较滞后。\n- RIA Wiki 数据源：由 FleTime 维护的存放于 RIA Wiki 上的数据源，更新比较及时。",
   "riatoriifind.config.source.local": "本地数据源",

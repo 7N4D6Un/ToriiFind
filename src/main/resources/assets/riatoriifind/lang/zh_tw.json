@@ -1,4 +1,46 @@
 {
-  "modmenu.nameTranslation.riatoriifind": "RIA鳥居搜索",
-  "modmenu.descriptionTranslation.riatoriifind": "一个可以快速查询 RIA 服務器中鳥居資訊的 Mod。"
+  "modmenu.nameTranslation.riatoriifind": "RIA鳥居搜尋",
+  "modmenu.descriptionTranslation.riatoriifind": "一個可以快速查詢 RIA 伺服器內鳥居或境地資訊的 Mod。",
+
+  "riatoriifind.command.help.find": "/riatoriifind <編號或關鍵字> | 搜尋鳥居或境地",
+
+  "riatoriifind.divider": "----------------------------------------",
+
+  "riatoriifind.result.title.prefix": "查詢結果",
+  "riatoriifind.result.title.suffix.before": " (共 ",
+  "riatoriifind.result.title.suffix.after": " 個)",
+  "riatoriifind.result.empty.find": "未找到任何相關的鳥居或境地資訊",
+  "riatoriifind.result.col.id": "編號",
+  "riatoriifind.result.col.grade": "等級",
+  "riatoriifind.result.col.name": "鳥居或境地名稱",
+  "riatoriifind.result.page": "第 %s/%s 頁",
+  "riatoriifind.result.prev_page": "[上一頁]",
+  "riatoriifind.result.prev_page_hover": "點擊查看上一頁",
+  "riatoriifind.result.next_page": "[下一頁]",
+  "riatoriifind.result.next_page_hover": "點擊查看下一頁",
+
+  "riatoriifind.result.wiki_link": "[WIKI]",
+  "riatoriifind.result.wiki_hover": "點擊查看Wiki頁面\n%s",
+
+  "riatoriifind.error.load_data": "讀取資料時出錯: %s",
+  "riatoriifind.error.no_session": "沒有可翻頁的搜尋結果，請先執行一次搜尋",
+
+  "riatoriifind.config.title": "RiaToriiFind 配置",
+  "riatoriifind.config.category.general": "通用",
+  "riatoriifind.config.show_check_popups": "顯示連線結果提示",
+  "riatoriifind.config.show_check_popups.tooltip": "關閉後，切換遠端資料來源後不會彈出連線成功或失敗的提示。",
+  "riatoriifind.config.source": "資料來源",
+  "riatoriifind.config.source.tooltip": "選擇用於查詢鳥居資訊的資料來源\n\n- 本地資料來源：使用 Mod 內置的資料，隨 Mod 更新而更新，資料比較滯後。\n- RIA Wiki 資料來源：由 FleTime 維護的存放於 RIA Wiki 上的資料來源，更新比較及時。",
+  "riatoriifind.config.source.local": "本地資料來源",
+  "riatoriifind.config.source.ria-wiki": "RIA Wiki 資料來源",
+  "riatoriifind.config.refresh_source": "刷新目前資料來源",
+  "riatoriifind.config.refresh_source.tooltip": "開啟後點擊完成並退出，會自動還原此開關並刷新一次目前的資料來源。",
+
+  "riatoriifind.config.debug_mode": "除錯模式",
+  "riatoriifind.config.debug_mode.tooltip": "開啟後在日誌中輸出詳細執行資訊，用於排查問題，沒事沒必要打開。",
+
+  "riatoriifind.source.check.success.title": "資料來源連線成功",
+  "riatoriifind.source.check.success.message": "成功從遠端來源取得資料檔案。",
+  "riatoriifind.source.check.fallback.title": "資料來源連線失敗",
+  "riatoriifind.source.check.fallback.message": "無法連線遠端來源，已切換為本地資料來源。"
 }

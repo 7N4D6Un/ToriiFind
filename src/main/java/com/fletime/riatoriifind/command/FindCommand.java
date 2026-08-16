@@ -2,7 +2,6 @@ package com.fletime.riatoriifind.command;
 
 import com.fletime.riatoriifind.RiaToriiFind;
 import com.fletime.riatoriifind.chat.ModClickEvents;
-import com.fletime.riatoriifind.config.ModConfig;
 import com.fletime.riatoriifind.service.ToriiDataService;
 import com.fletime.riatoriifind.service.ToriiDataService.FindEntry;
 import com.mojang.brigadier.context.CommandContext;
@@ -114,17 +113,6 @@ public class FindCommand {
 				.withColor(ChatFormatting.BLUE));
 			line.append(Component.literal(" ")).append(link);
 
-			// 开关开启且有坐标的条目在 WIKI 后追加 [导航]，点击直接开始导航
-			int[] coord = ModConfig.showNavButton ? parseCoord(entry.coord()) : null;
-			if (coord != null) {
-				var nav = t("riatoriifind.result.nav").copy().withStyle(Style.EMPTY
-					.withClickEvent(new ModClickEvents.NavClick(coord[0], coord[1]))
-					.withHoverEvent(new HoverEvent.ShowText(
-						gray(t("riatoriifind.result.nav_hover", coord[0], coord[1]))))
-					.withColor(ChatFormatting.GREEN));
-				line.append(Component.literal(" ")).append(nav);
-			}
-
 			out.accept(line);
 		}
 		out.accept(divider());
@@ -150,19 +138,6 @@ public class FindCommand {
 				.withClickEvent(new ModClickEvents.PageClick(targetPage))
 				.withHoverEvent(new HoverEvent.ShowText(gray(hover)))
 				.withColor(ChatFormatting.GREEN));
-	}
-
-	// 解析坐标字符串，兼容 "x,z" 与 "x.z" 两种分隔，失败返回 null
-	private static int[] parseCoord(String coord) {
-		if (coord == null || coord.isBlank()) return null;
-		String[] parts = coord.split(",");
-		if (parts.length != 2) parts = coord.split("\\.");
-		if (parts.length != 2) return null;
-		try {
-			return new int[]{Integer.parseInt(parts[0].trim()), Integer.parseInt(parts[1].trim())};
-		} catch (NumberFormatException e) {
-			return null;
-		}
 	}
 
 	private static int displayWidth(String s) {
