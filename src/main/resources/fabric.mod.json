@@ -3,7 +3,7 @@
 	"id": "riatoriifind",
 	"version": "${version}",
 	"name": "RiaToriiFind",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "A mod that allows you to quickly query information about torii or precincts within the RIA server.",
 	"authors": [
 		"FleTime"
 	],
@@ -30,7 +30,7 @@
 	},
 	"depends": {
 		"fabricloader": ">=0.19.3",
-		"minecraft": "~26.2",
+		"minecraft": ">=26.1",
 		"java": ">=25",
 		"fabric-api": "*",
 		"cloth-config": "*"

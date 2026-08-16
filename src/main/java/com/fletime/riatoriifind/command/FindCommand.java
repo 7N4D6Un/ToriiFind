@@ -2,6 +2,7 @@ package com.fletime.riatoriifind.command;
 
 import com.fletime.riatoriifind.RiaToriiFind;
 import com.fletime.riatoriifind.chat.ModClickEvents;
+import com.fletime.riatoriifind.compat.CompatAccessor;
 import com.fletime.riatoriifind.config.ModConfig;
 import com.fletime.riatoriifind.service.ToriiDataService;
 import com.fletime.riatoriifind.service.ToriiDataService.FindEntry;
@@ -49,7 +50,7 @@ public class FindCommand {
 	// 翻页入口：由 [上一页]/[下一页] 点击事件触发（经 ChatScreenMixin），无指令上下文
 	public static void showCachedPage(int page) {
 		Consumer<Component> chat = msg ->
-				Minecraft.getInstance().gui.hud.getChat().addClientSystemMessage(msg);
+				CompatAccessor.chat(Minecraft.getInstance()).addClientSystemMessage(msg);
 		if (session == null) {
 			chat.accept(red(t("riatoriifind.error.no_session")));
 			return;

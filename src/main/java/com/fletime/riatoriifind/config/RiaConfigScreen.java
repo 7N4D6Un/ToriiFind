@@ -1,5 +1,6 @@
 package com.fletime.riatoriifind.config;
 
+import com.fletime.riatoriifind.compat.CompatAccessor;
 import com.fletime.riatoriifind.service.SourceCheckService;
 import com.fletime.riatoriifind.service.ToriiDataService;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
@@ -123,7 +124,7 @@ public final class RiaConfigScreen {
 
     private static void showToast(Component title, Component message) {
         SystemToast.add(
-                Minecraft.getInstance().gui.toastManager(),
+                CompatAccessor.toastManager(Minecraft.getInstance()),
                 new SystemToast.SystemToastId(),
                 title, message);
     }
